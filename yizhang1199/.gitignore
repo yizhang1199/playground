@@ -1,0 +1,15 @@
+*.sw?
+.#*
+*#
+*~
+.classpath
+.project
+.settings
+bin
+build
+target
+*.sublime-*
+/scratch
+.gradle
+*.iml
+.idea
