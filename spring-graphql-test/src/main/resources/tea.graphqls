@@ -1,0 +1,32 @@
+enum TeaType {
+    White,
+    Green,
+    Oolong,
+    Black
+}
+
+type Tea {
+    # The id of the tea
+    id: String!
+    # The type of the tea
+    type: TeaType!
+    # The name of the tea
+    name: String
+    description: String
+    producedIn: [Place!]!
+}
+
+type Place {
+    id: String!
+    name: String!
+    produces: [Tea]
+}
+
+input TeaInput {
+    # The type of the tea
+    type: TeaType!
+    # The name of the tea
+    name: String!
+    description: String
+    producedInPlaceIds: [String!]!
+}

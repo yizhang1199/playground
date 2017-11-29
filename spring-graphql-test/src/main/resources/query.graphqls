@@ -1,0 +1,15 @@
+type Query {
+    # If type omitted, returns the whole list of teas
+    teas(type: TeaType): [Tea]
+    # If id omitted, returns the whole list of places that produce teas
+    places(id: String): [Place]
+
+    # If episode omitted, returns the hero of the whole saga. If provided, returns the hero of that particular episode
+    hero(episode: Episode): Character
+    # Find human by id
+    human(id: String!): Human
+    # Find droid by id
+    droid(id: String!): Droid
+    # Find character by id
+    character(id: String!): Character
+}
