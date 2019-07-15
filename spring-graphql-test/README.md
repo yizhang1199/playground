@@ -8,7 +8,7 @@
 
 http://localhost:9000/graphiql
 
-`query exploreTeas {
+query exploreTeas {
   teas {
     id
     name
