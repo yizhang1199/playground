@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InversionCountTest {
 
-    private InversionCounter instance;
+    private InversionCount instance;
 
     @BeforeEach
     public void setUp() {
-        instance = new InversionCounter();
+        instance = new InversionCount();
     }
 
     private static Stream<Arguments> intArrayProvider() {

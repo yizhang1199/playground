@@ -10,7 +10,7 @@ import java.util.Arrays;
  * <p>
  * Example: The sequence 2, 4, 1, 3, 5 has three inversions (2, 1), (4, 1), (4, 3).
  */
-public class InversionCounter {
+public class InversionCount {
 
     public int countInversions(int[] input) {
         int[] clone = (input == null) ? null : Arrays.copyOf(input, input.length);
