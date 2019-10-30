@@ -2,6 +2,9 @@ package com.example.iot
 
 import akka.actor.{ActorSystem, PoisonPill}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.example.iot.Device.RecordTemperature
+import com.example.iot.DeviceGroup.RequestAllTemperatures
+import com.example.iot.DeviceManager.RequestTrackDevice
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration.{Duration, MILLISECONDS}
@@ -100,6 +103,49 @@ class DeviceGroupSpec() extends TestKit(ActorSystem("DeviceGroupSpec"))
         groupActor ! DeviceGroup.RequestDeviceList(123)
         expectMsg(DeviceGroup.ReplyDeviceList(123, Set(deviceId2)))
       }, max = Duration(500, MILLISECONDS))
+    }
+
+    "be able to collect temperatures from all active devices" in {
+      val groupActor = system.actorOf(DeviceGroup.props(groupId))
+
+      groupActor ! DeviceManager.RequestTrackDevice(groupId, "terminatedDevice")
+      expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActorTerminated = lastSender
+      watch(deviceActorTerminated)
+
+      groupActor ! DeviceManager.RequestTrackDevice(groupId, "alarm")
+      expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActor1 = lastSender
+
+      groupActor ! DeviceManager.RequestTrackDevice(groupId, "lights")
+      expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActor2 = lastSender
+
+      groupActor ! DeviceManager.RequestTrackDevice(groupId, "heater")
+      expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActor3 = lastSender
+
+      // Check that the device actors are working
+      deviceActor1 ! Device.RecordTemperature(requestId = 0, 1.0)
+      expectMsg(Device.TemperatureRecorded(requestId = 0))
+      deviceActor2 ! Device.RecordTemperature(requestId = 1, 2.0)
+      expectMsg(Device.TemperatureRecorded(requestId = 1))
+      // No temperature for device3
+
+      groupActor ! DeviceGroup.RequestAllTemperatures(requestId = 0)
+
+      // TODO can be fragile based on timing
+      deviceActorTerminated ! PoisonPill
+      expectTerminated(deviceActorTerminated)
+
+      expectMsg(
+        DeviceGroup.RespondAllTemperatures(
+          requestId = 0,
+          temperatures = Map(
+            "terminatedDevice" -> DeviceGroup.DeviceNotAvailable,
+            "alarm" -> DeviceGroup.Temperature(1.0),
+            "lights" -> DeviceGroup.Temperature(2.0),
+            "heater" -> DeviceGroup.TemperatureNotAvailable)))
     }
   }
 }

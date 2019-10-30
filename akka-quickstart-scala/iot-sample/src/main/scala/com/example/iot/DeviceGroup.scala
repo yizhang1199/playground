@@ -4,7 +4,7 @@ import akka.actor
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.example.iot.DeviceManager.RequestTrackDevice
 
-import scala.collection.immutable
+import scala.concurrent.duration.{Duration, SECONDS}
 
 object DeviceGroup {
   def props(groupId: String): Props = actor.Props(new DeviceGroup(groupId))
@@ -70,27 +70,8 @@ class DeviceGroup(groupId: String) extends Actor with ActorLogging {
       context.become(receiveWithDeviceActors(newDeviceIdToActor, newActorToDeviceId))
 
     case RequestAllTemperatures(requestId) =>
-      log.info(s"RequestAllTemperatures $requestId")
-      var deviceRequestId: Long = 0
-      //      val requestIdToTemperature2: Map[Long, TemperatureReading] =
-      //        deviceIdToActor.map(
-      //          (deviceId: String, deviceActor: ActorRef) => {
-      //            deviceRequestId += 1
-      //            deviceActor ! Device.ReadTemperature(deviceRequestId)
-      //            (deviceRequestId -> DeviceNotAvailable)
-      //          }
-      //        )
-
-      val deviceActors: Seq[ActorRef] = deviceIdToActor.values.toSeq
-      val z: immutable.Map[Long, TemperatureReading] = immutable.Map()
-
-      val requestIdToTemperature: immutable.Map[Long, TemperatureReading] =
-        deviceActors.foldLeft(immutable.Map[Long, TemperatureReading]())(
-          (z : immutable.Map[Long, TemperatureReading], actor: ActorRef) => {
-            deviceRequestId += 1
-            actor ! Device.ReadTemperature(deviceRequestId)
-            z + (deviceRequestId -> DeviceNotAvailable)
-          }
-        )
+      context.actorOf(
+        DeviceGroupQuery
+          .props(actorToDeviceId = actorToDeviceId, requestId = requestId, requester = sender(), Duration(3, SECONDS)))
   }
 }
