@@ -10,9 +10,8 @@ class TwoferSpec extends WordSpec {
       result should be ("One for Kitty, one for me.")
     }
 
-    "use you when name is empty" in {
-      val result = Twofer.twofer("")
-      result should be ("One for you, one for me.")
+    "reject empty name" in {
+      an [IllegalArgumentException] shouldBe thrownBy(Twofer.twofer(""))
     }
 
     "use you when name is not given" in {
