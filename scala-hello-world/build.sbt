@@ -10,7 +10,6 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 lazy val `scala-hello-world` = sbt.project
   .in(file("."))
   .settings(
-    name := "iot-sample",
     libraryDependencies ++= Seq(
       scalaTest % Test
     )
