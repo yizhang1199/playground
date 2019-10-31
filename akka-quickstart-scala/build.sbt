@@ -11,7 +11,6 @@ lazy val akkaVersion = "2.5.26"
 
 lazy val akkaActor = "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion
 lazy val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion
-//lazy val akkaActorTestKit = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion
 lazy val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.7.28"
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8"
 
