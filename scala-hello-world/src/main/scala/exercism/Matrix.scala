@@ -1,5 +1,8 @@
 package exercism
 
+/**
+ * https://exercism.io/my/solutions/81bfeb576250414aa314777fc8e5dcc4
+ */
 object Matrix {
   def apply(matrixString: String): Matrix = new Matrix(matrixString)
 }
@@ -10,7 +13,7 @@ case class Matrix(private val matrixString: String) {
       (matrix: Vector[Vector[Int]], rowString: String) => {
         val cols = rowString.split("\\s")
         if (matrix.length > 0) require(cols.length == matrix(0).length, "all columns must be the same size")
-        matrix :+ cols.map(s => Integer.parseInt(s)).toVector
+        matrix :+ cols.map(_.toInt).toVector
       }
     }
   }

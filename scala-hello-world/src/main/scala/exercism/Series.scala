@@ -1,6 +1,8 @@
 package exercism
 
 /**
+ * https://exercism.io/my/solutions/4c51d8f490ec4a0ebd262edd4d65f6a0
+ *
  * Given a string of digits, output all the contiguous substrings of length n in that string in the order that they appear.
  *
  * For example, the string "49142" has the following 3-digit series:
@@ -21,13 +23,13 @@ package exercism
 object Series {
   def slices(size: Int, input: String): List[List[Int]] = {
     (0 to (input.length - size)).map(n => {
-      input.substring(n, size + n).toList.map(c => c.asDigit)
+      input.substring(n, size + n).toList.map(c => c.toInt)
     }).toList
   }
 
   def slices2(size: Int, input: String): List[List[Int]] = {
     input.toList.sliding(size).map(
-      s => s.map(_.asDigit)
+      s => s.map(_.toInt)
     ).toList
   }
 }
