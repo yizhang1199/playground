@@ -20,7 +20,7 @@ def forFun1[T](first: List[T], second: List[T]): List[List[T]] = {
     t <- second
   } yield first :+ t
 }
-forFun1(List("a", "b"), List("c", "d"))
+forFun1(List("a", "b"), List("c", "d")) // List(List(a, b, c), List(a, b, d))
 
 def forFun1Equivalent[T](first: List[T], second: List[T]): List[List[T]] = {
   second.map(t => {first :+ t})

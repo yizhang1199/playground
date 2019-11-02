@@ -34,17 +34,42 @@ import scala.annotation.tailrec
  */
 object PrimeFactors {
   def factors(number: Long): List[Long] = {
-    // can't use the normal range for numbers > Int.MaxValue
-    def lazyRange(v: Long): LazyList[Long] = v #:: lazyRange(v + 1)
+    require(number > 0)
+
+    lazy val lazyRange: LazyList[Long] = 2 #:: lazyRange.map(_ + 1)
+
     @tailrec
     def factor(factors: List[Long], number: Long): List[Long] = number match {
-      case 0 | 1 => factors
+      case 1 => factors
       case _ =>
-        val firstFactor = lazyRange(2).find(number % _ == 0).get
+        val firstFactor = lazyRange.find(number % _ == 0).get
         val remainder = number / firstFactor
         factor(firstFactor :: factors, remainder)
     }
 
     factor(List(), number).reverse
+  }
+
+  /**
+   * A more efficient implementation from the community.  It's more efficient because it will skip div already tried, e.g.
+   * if number is not divisible by div-1, then (number/div) won't be divisible by div-1 either.  Also, it does not require
+   * an additional sequence for div.
+   *
+   * @param number
+   * @return
+   */
+  def factorsFaster(number: Long): List[Long] = {
+    @tailrec
+    def findFactors(num: Long,
+                    div: Long = 2,
+                    acc: List[Long] = List()): List[Long] =
+      div match {
+        case d if num % d == 0L =>
+          findFactors(num / div, div, div :: acc)
+        case d if d >= num => acc.reverse
+        case _ => findFactors(num, div + 1, acc)
+      }
+
+    findFactors(number)
   }
 }

@@ -22,11 +22,13 @@ package exercism
  */
 object Series {
   def slices(size: Int, input: String): List[List[Int]] = {
-    (0 to (input.length - size)).map(n => {
-      input.substring(n, size + n).toList.map(c => c.toInt)
-    }).toList
+    (0 to (input.length - size)).map(
+      n => {
+        input.substring(n, size + n).toList.map(c => c.asDigit) // c.toInt returns the corresponding character code
+      }).toList
   }
 
+  // Another solution from the community, using "sliding
   def slices2(size: Int, input: String): List[List[Int]] = {
     input.toList.sliding(size).map(
       s => s.map(_.toInt)
