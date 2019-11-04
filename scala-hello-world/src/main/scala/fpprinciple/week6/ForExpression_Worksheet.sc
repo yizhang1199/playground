@@ -23,7 +23,9 @@ def forFun1[T](first: List[T], second: List[T]): List[List[T]] = {
 forFun1(List("a", "b"), List("c", "d")) // List(List(a, b, c), List(a, b, d))
 
 def forFun1Equivalent[T](first: List[T], second: List[T]): List[List[T]] = {
-  second.map(t => {first :+ t})
+  second.map(t => {
+    first :+ t
+  })
 }
 forFun1Equivalent(List("a", "b"), List("c", "d"))
 
@@ -48,42 +50,55 @@ val fruits = Set("mango", "peach", "kiwi")
 def forFun3(teas: Seq[String], fruits: Set[String]): Seq[(String, String)] = {
   for {
     tea <- teas if tea != "herb"
-    fruit <- fruits if fruit.length > 4
+    fruit <- fruits if fruit.length > 4 // excludes kiwi
   } yield (tea, fruit)
 }
 val callForFun3 = forFun3(teas, fruits)
 // callForFun3: List((green,mango), (green,peach), (oolong,mango), (oolong,peach), (black,mango), (black,peach), (puer,mango), (puer,peach))
+def forFun3Equivalent(teas: Seq[String], fruits: Set[String]): Seq[(String, String)] = {
+  teas
+    .withFilter(tea => tea != "herb")
+    .flatMap(t =>
+      fruits
+        .withFilter(fruit => fruit.length > 4)
+        .map(f => (t, f)))
+}
+val callForFun3Equivalent = forFun3Equivalent(teas, fruits)
+assert(callForFun3 == callForFun3Equivalent)
 
 def forFun4(teas: Seq[String], fruits: Seq[String]): Seq[(String, String)] = {
   for {
     tea <- teas
-    t <- tea if (tea != "herb" && t == 'o')
+    teaChar <- tea if tea != "herb" && teaChar == 'o' // for oolong, this will loop 3 times
     fruit <- fruits if fruit == "kiwi"
-    f <- fruit if f == 'i'
+    fruitChar <- fruit if fruitChar == 'i' // for kiwi, this will loop 2 times
   } yield (tea, fruit)
 }
-val callForFun4 = forFun4(teas, Vector("mango", "peach", "kiwi"))
+val callForFun4 = forFun4(teas, fruits.toList)
 // callForFun4: List((oolong,kiwi), (oolong,kiwi), (oolong,kiwi), (oolong,kiwi), (oolong,kiwi), (oolong,kiwi))
-
 def forFun4Equivalent(teas: Seq[String], fruits: Seq[String]): Seq[(String, String)] = {
   teas.flatMap(tea => {
-    tea.withFilter(t => tea != "herb" && t == 'o').flatMap(t => {
-      fruits.withFilter(fruit => fruit == "kiwi").flatMap(fruit => {
-        fruit.withFilter(f => f == 'i').map(f => {
-          (tea, fruit)
-        })
+    tea
+      .withFilter(teaChar => tea != "herb" && teaChar == 'o')
+      .flatMap(teaChar => {
+        fruits
+          .withFilter(fruit => fruit == "kiwi")
+          .flatMap(fruit => {
+            fruit
+              .withFilter(fruitChar => fruitChar == 'i')
+              .map(fruitChar => (tea, fruit))
+          })
       })
-    })
   })
 }
-
-val anotherWay = forFun4Equivalent(teas, Vector("mango", "peach", "kiwi"))
+val callForFun4Equivalent = forFun4Equivalent(teas, fruits.toList)
+assert(callForFun4 == callForFun4Equivalent)
 
 // for expressions that performs an action but do not yield a value
-for (x <- 1 to 3) println(s"iteration $x")
+for ( x <- 1 to 3 ) println(s"iteration $x")
 
 // Mid-stream assignment in a for expression
 for {
   x <- 1 to 3 // y cannot be used yet as it hasn't be declared
-  y = x^3 // val should not be used, expressions after this can use y
+  y = x ^ 3 // val should not be used, expressions after this can use y
 } println(x + "^3 = " + y) // both x and y can be referenced here
