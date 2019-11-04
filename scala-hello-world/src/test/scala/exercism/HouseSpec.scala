@@ -6,6 +6,7 @@ import org.scalatest.{Matchers, FunSuite}
 class HouseSpec extends FunSuite with Matchers {
 
   test("verse one - the house that jack built") {
+    pending
     House.recite(1, 1) should be("""This is the house that Jack built.
 
 """)

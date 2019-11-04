@@ -5,7 +5,7 @@ def printCapital(country: String)(function1: String => String): Unit = {
 }
 
 // Maps are also functions, e.g. a Map instance can be used as a function value/instance
-printCapital("China")(capitalOfCountry)
+printCapital("China")(capitalOfCountry) // China: Beijing
 //printCapital("Blah")(capitalOfCountry) // throws NoSuchElementException
 
 // Map.get will return Option[ValueType] instead of the value directly
@@ -25,69 +25,67 @@ mapWithListValues.get("key2").filter(p => p.length > 2)
 
 val testOptionMap: Option[String] = mapWithListValues.get("key1") map (value => value mkString "+")
 
-// terms: key->exponent value->coefficient
-class Poly(origTerms: Map[Int, Double]) {
-  val terms: Map[Int, Double] = origTerms withDefaultValue 0.0
-
-  def this(bindings: (Int, Double)*) = this(bindings.toMap)
-
-  def add(other: Poly): Poly = {
-    val combinedTerms: Map[Int, Double] = terms ++ (other.terms map adjust)
-    new Poly(combinedTerms)
-  }
-
-  private def adjust(term: (Int, Double)): (Int, Double) = {
-    val (exp, coefficient) = term
-    exp -> (coefficient + terms(exp))
-    //(exp, coefficient + terms(exp))
-  }
-
-  def +(other: Poly): Poly = {
-    val combinedTerms: Map[Int, Double] = (other.terms foldLeft terms) (addTerm)
-    new Poly(combinedTerms)
-  }
-
-  private def addTerm(terms: Map[Int, Double], term: (Int, Double)): Map[Int, Double] = {
-    val (exponent, coefficient) = term
-    //terms.updated(exponent, coefficient + terms(exponent))
-    terms + (exponent -> (coefficient + terms(exponent)))
-  }
-
-  override def toString: String = {
-    //println("terms.toList: " + terms.toList)
-    val value = for {
-      // Map.toList will return a list of pairs: List[Pair(K, V)]
-      // (exponent, coefficient) <- terms will return K,V pairs in unsorted order
-      (exponent, coefficient) <- terms.toList.sorted.reverse
-      if coefficient != 0
-    } yield {
-      if (exponent == 0) String.valueOf(coefficient)
-      else if (exponent == 1) coefficient + "X"
-      else coefficient + "X^" + exponent
-    }
-
-    //println(value)
-    value mkString " + "
-  }
-}
-
-val poly1 = new Poly(1 -> 2.0, 0 -> 8, 3 -> 2, 8 -> 3)
-val poly2 = new Poly(1 -> 0.5, 0 -> 2, 2 -> 2)
-val poly3 = poly1 + poly2
-
-val mapData : Map[String, Seq[String]] =
+/**
+ * map, flatMap, and collect
+ */
+val mapData: Map[String, Seq[String]] =
   Map("teas" -> List("green", "oolong"), "fruits" -> List("mango", "kiwi", "peach"))
-// map does not support flatMap so need to convert seq first
-val flatMapTest : Seq[String] = mapData.toSeq.flatMap( p => {
-  p match { case (key, value) => value.prepended(key) }
-})
-
-// TODO fails with "error: missing parameter type" why?
-//val flatMapTest2 : Set[String] = mapData.toSet.flatMap(p => {
-//  p match { case (key, value) => (key::value).toSet }
-//})
+// maps every (String, Seq[String]) to Seq[(String, Int)]
+// returns: Map(3555939 -> teas+green+oolong,
+//              -1265922337 -> fruits+mango+kiwi+peach)
+val flatMapTest: Map[Int, String] = mapData
+  .flatMap[Int, String] {
+    p: (String, Seq[String]) => Seq((p._1.hashCode, (p._1 +: p._2).mkString("+")))
+  }
+// maps every (String, Seq[String]) to Seq[String]
+// returns: List(teas, green, oolong, fruits, mango, kiwi, peach)
+val flatMapTest2: Iterable[String] = mapData.flatMap[String] {
+  p: (String, Seq[String]) => p._1 +: p._2
+}
+// returns: List(teas, green, oolong)
+val flatMapTestWithFilter = mapData
+  .flatMap[String] {
+    case (key, values) if key == "teas" => key +: values
+    case _ => Seq() // required because flatMap takes a function, not a partial function
+  }
+// maps every (String, Seq[String]) to (String, Int)
+// returns: Map(teas -> 2, fruits -> 3)
+val mapTest: Map[String, Int] = mapData.map[String, Int] {
+  p: (String, Seq[String]) => (p._1, p._2.length)
+}
+// maps every (String, Seq[String]) to Seq[String]
+// returns: List(List(teas, green, oolong), List(fruits, mango, kiwi, peach))
+val mapTest2: Iterable[Seq[String]] = mapData.map[Seq[String]] {
+  p: (String, Seq[String]) => p._1 +: p._2
+}
+// mapTestWithFilter is equivalent to collectTest
+// returns: List(List(teas, green, oolong))
+val mapTestWithFilter = mapData
+  .filter(p => p._1 == "teas")
+  .map[Seq[String]] { case (key, values) => key +: values }
+// returns: List(List(teas, green, oolong), List())
+// notice the last List()
+val mapTestWithFilter2 = mapData
+  .map[Seq[String]] {
+    case (key, values) if key == "teas" => key +: values
+    case _ => Seq() // required because map takes a function, not a partial function
+  }
+// collect, unlike map, takes a partial function
+// this means collect can replace chaining filter with map
+// returns: List(List(teas, green, oolong))
+val collectTest = mapData.collect[Seq[String]] {
+  case (key: String, values: Seq[String]) if key == "teas" => key +: values
+}
+// collectTest2 is equivalent to collectTest
+// returns: List(List(teas, green, oolong))
+val pf = new PartialFunction[(String, Seq[String]), Seq[String]] {
+  def apply(x: (String, Seq[String])): Seq[String] = x._1 +: x._2
+  def isDefinedAt(x: (String, Seq[String])) = x._1 == "teas"
+}
+val collectTest2 = mapData.collect[Seq[String]](pf)
 
 val setData = Set("green", "oolong", "black", "puer")
+// returns: HashSet(e, n, u, a, b, p, c, r, k, o, g, l)
 val flaMapTest3 = setData.flatMap(_.toCharArray) // same as (p => p.toCharArray)
 
-// See sample implementations for map and flatMap in Monad_Worksheet.sc
+// see sample implementations for map and flatMap in Monad_Worksheet.sc

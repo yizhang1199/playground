@@ -31,7 +31,7 @@ object Series {
   // Another solution from the community, using "sliding
   def slices2(size: Int, input: String): List[List[Int]] = {
     input.toList.sliding(size).map(
-      s => s.map(_.toInt)
+      s => s.map(_.asDigit)
     ).toList
   }
 }

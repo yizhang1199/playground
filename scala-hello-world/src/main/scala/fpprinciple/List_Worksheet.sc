@@ -130,3 +130,15 @@ def encode[T](list: List[T]): List[(T, Int)] =  {
 encode(null)
 encode(Nil)
 encode(List("apple", "apple", "mango", "apple", "mango", "mango"))
+
+// compose
+val list1 = List("Hello", "Kitty", "And", "World")
+def findIndex(s: String): Int = s.hashCode % list1.length
+// compose will take the input function and return a new function
+// composed with this.apply, e.g. list1.apply(findIndex(arguement))
+val afterCompose: String => String = list1.compose(findIndex(_))
+val input = "A cow jumped over the moon"
+// The following 3 method calls are exactly the same
+afterCompose(input)
+list1.apply(findIndex(input))
+list1(findIndex(input))
