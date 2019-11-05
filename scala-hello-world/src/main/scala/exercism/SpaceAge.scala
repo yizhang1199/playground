@@ -15,51 +15,59 @@ package exercism
  * Neptune: orbital period 164.79132 Earth years
  */
 object SpaceAge {
-  def onEarth(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Earth)
+  def onEarth(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Earth)
 
-  def onMercury(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Mercury)
+  def onMercury(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Mercury)
 
-  def onVenus(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Venus)
+  def onVenus(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Venus)
 
-  def onMars(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Mars)
+  def onMars(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Mars)
 
-  def onJupiter(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Jupiter)
+  def onJupiter(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Jupiter)
 
-  def onSaturn(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Saturn)
+  def onSaturn(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Saturn)
 
-  def onUranus(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Uranus)
+  def onUranus(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Uranus)
 
-  def onNeptune(ageInSeconds: Double): Double = ageInSeconds / orbitalPeriodInEarthSeconds(Neptune)
+  def onNeptune(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Neptune)
 
-  private val orbitalPeriodInEarthSeconds: Map[Planet, Double] = Map(
-    Earth -> 1.0,
-    Mercury -> 0.2408467,
-    Venus -> 0.61519726,
-    Mars -> 1.8808158,
-    Jupiter -> 11.862615,
-    Saturn -> 29.447498,
-    Uranus -> 84.016846,
-    Neptune -> 164.79132
-  ).map {
-    keyValue => keyValue.copy(_2 = 31557600 * keyValue._2.asInstanceOf[Double])
-  }
+  private def toEarthAgeInSeconds(ageInSeconds: Double, planet: Planet): Double =
+    ageInSeconds / (planet.orbitalPeriod * Earth.orbitalPeriodInSeconds)
 }
 
-sealed trait Planet extends Serializable
+sealed trait Planet {
+  def orbitalPeriod: Double
+}
 
-case object Earth extends Planet
+case object Earth extends Planet {
+  val orbitalPeriodInSeconds: Double = 31557600
+  override def orbitalPeriod: Double = 1.0
+}
 
-case object Mercury extends Planet
+case object Mercury extends Planet {
+  override def orbitalPeriod: Double = 0.2408467
+}
 
-case object Venus extends Planet
+case object Venus extends Planet {
+  override def orbitalPeriod: Double = 0.61519726
+}
 
-case object Mars extends Planet
+case object Mars extends Planet {
+  override def orbitalPeriod: Double = 1.8808158
+}
 
-case object Jupiter extends Planet
+case object Jupiter extends Planet {
+  override def orbitalPeriod: Double = 11.862615
+}
 
-case object Saturn extends Planet
+case object Saturn extends Planet {
+  override def orbitalPeriod: Double = 29.447498
+}
 
-case object Uranus extends Planet
+case object Uranus extends Planet {
+  override def orbitalPeriod: Double = 84.016846
+}
 
-case object Neptune extends Planet
-
+case object Neptune extends Planet {
+  override def orbitalPeriod: Double = 164.79132
+}
