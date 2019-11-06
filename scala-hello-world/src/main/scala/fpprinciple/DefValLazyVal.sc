@@ -1,26 +1,54 @@
-// Evaluation
-// val: strict evaluation -> evaluated once during initialization and computed value cached.
-//      Subsequent access will use previously computed value.
-// def: call-by-name evaluation -> evaluated (value computed) each time it is accessed.
-// lazy val: lazy evaluation -> evaluated once when it's accessed for the first time and computed value cached.
-//      Subsequent access will use previously computed value.
+/**
+ * Evaluation
+ * val: strict evaluation -> evaluated once during initialization and computed value cached.
+ * Subsequent access will use previously computed value.
+ * def: call-by-name evaluation -> evaluated (value computed) each time it is accessed.
+ * lazy val: lazy evaluation -> evaluated once when it's accessed for the first time and computed value cached.
+ * Subsequent access will use previously computed value.
+ */
+/**
+ * Always use def, not val, in a trait for abstract members.
+ *
+ * https://stackoverflow.com/questions/19642053/when-to-use-val-or-def-in-scala-traits
+ * A def can be implemented by either of a def, a val, a lazy val or an object. So it's the most abstract form of defining a member.
+ * Since traits are usually abstract interfaces, saying you want a val is saying how the implementation should do.
+ *
+ * https://blog.jessitron.com/2012/07/10/choices-with-def-and-val-in-scala/
+ * In a subclass, you can override a def with a val or a def, but you can only override a val with a val.
+ * When Scala has a val, it knows the value of that expression will never change. This is not true with def; therefore
+ * declaring something as val says more than declaring a def.
+ */
 def expr: Int = {
   val valExample = {
-    print("val; "); 5
+    print("val; ");
+    5
   }
 
   def defExample = {
-    print("def; "); 4
+    print("def; ");
+    4
   }
 
   lazy val lazyValExample = {
-    print("lazy val; "); 3
+    print("lazy val; ");
+    3
   }
 
   defExample + valExample + defExample + lazyValExample + valExample + lazyValExample
 }
 
 expr // output will be: val; def; def; lazy val;
+
+// def with or without ()
+// https://blog.jessitron.com/2012/07/10/choices-with-def-and-val-in-scala/
+// rule of thumb: use parentheses if the method changes state; otherwise don’t.
+def spaceAge: Double = 1.0 // can only be accessed without ()
+def spaceAge2(): Double = 2.0  // can be accessed with or without ()
+
+spaceAge // ok
+//spaceAge() // compilation error
+spaceAge2 // ok
+spaceAge2() // ok
 
 /**
  * Function Vs Method
@@ -50,11 +78,15 @@ expr // output will be: val; def; def; lazy val;
 // Lambda expression (also called anonymous function) is a function definition that is
 // not bound to an identifier. The latter is a named function
 // donNothing is a function value created at runtime, whose apply method will evaluate the function literal "(_: Int) => {}"
-val doNothing : Int => Unit = (_: Int) => {} // doNothing's type is explicitly defined
-val doNothing2 = (_: Int) => {}  // doNothing2's type is inferred
-val lambdaExpr2 : (Int, Int) => Int = (x: Int, y: Int) => { x + y }
-val lambdaExpr3 = (x: Int, y: Int) => { x + y } // same as lambdaExpr2
-val lambdaExpr4 : (Int, Int) => Int = (x: Int, y: Int) => { // same as lambdaExpr3
+val doNothing: Int => Unit = (_: Int) => {} // doNothing's type is explicitly defined
+val doNothing2 = (_: Int) => {} // doNothing2's type is inferred
+val lambdaExpr2: (Int, Int) => Int = (x: Int, y: Int) => {
+  x + y
+}
+val lambdaExpr3 = (x: Int, y: Int) => {
+  x + y
+} // same as lambdaExpr2
+val lambdaExpr4: (Int, Int) => Int = (x: Int, y: Int) => { // same as lambdaExpr3
   val z = x + y
   z
 }
@@ -63,8 +95,12 @@ val lambdaExpr6 = (_: Int) + (_: Int) // same as lambdaExpr5, _ must appear only
 
 lambdaExpr4(5, 6)
 
-def doNothingDef() = { println("doNothingDef: I actually do something") }
-def doNothingDef2 = { println("doNothingDef2: I actually do something") }
+def doNothingDef() = {
+  println("doNothingDef: I actually do something")
+}
+def doNothingDef2 = {
+  println("doNothingDef2: I actually do something")
+}
 doNothingDef
 doNothingDef2
 
@@ -110,7 +146,7 @@ sumFunction(0, 2, 8)
  */
 val sumFunction1 = sum(1, _, 3) // Int => Int
 sumFunction1(2) // 1 + 2 + 3
-val sumFunction2 = sum(1, _, _)  // // (Int, Int) => Int
+val sumFunction2 = sum(1, _, _) // // (Int, Int) => Int
 sumFunction2(10, 11) // 1 + 10 + 11
 (sum _).toString // we can now call all methods available on the function object
 (sum _).apply(4, 5, 6) // Can also use syntactic sugar sum(4, 5)

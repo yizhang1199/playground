@@ -3,7 +3,6 @@ def echo(args: String*) = {
   println("args=" + args)
   for (arg <- args) println(arg)
 }
-
 echo()
 echo("Hello", "Kitty")
 
@@ -15,7 +14,7 @@ echo(names: _*)
 echo(List("Hello", "too"): _*)
 
 // Named arguements, frequently used with default arguements
-// TODO tight coupling?  What if parameter names are renamed?
+// TODO tight coupling?  What if parameter names change?
 def speed(distance: Float, time: Float): Float = distance / time
 speed(100, 10)
 speed(time=10, distance=100)
@@ -31,30 +30,29 @@ greet(out=Console.err)
 
 // By-name parameters (mostly for functions that take no arguements?)
 // https://learning.oreilly.com/library/view/programming-in-scala/9780981531687/control-abstraction.html
-var assertionEnabled = true
-// p is a "normal" parameter that represents a function that takes no arguement and returns Boolean
-def myAssert(p: () => Boolean): Unit = {
-  if (assertionEnabled && p()) {
-    println("myAssert: AssertionError!")
-  }
+def expensiveTrue() : Boolean = {
+  println("expensiveTrue: taking lots of time")
+  true
 }
-
-myAssert(() => 5 > 3)
+// p is a "normal" parameter that represents a function that takes no arguement and returns Boolean
+def myAssertWithFunction(assertionEnabled: Boolean, p: () => Boolean): Unit = {
+  if (assertionEnabled && p()) println("myAssertWithFunction: assertError!")
+}
+myAssertWithFunction(true, expensiveTrue) // expensiveTrue will be called
+myAssertWithFunction(false, expensiveTrue) // expensiveTrue will not be called
 
 // p is a by-name parameter that represents a function that takes no arguement and returns Boolean
-def myAssertWithByNameParameter(p: => Boolean): Unit = {
-  if (assertionEnabled && p) {
-    println("myAssertWithByNameParameter: AssertionError!")
-  }
+def myAssertWithByNameParameter(assertionEnabled: Boolean, p: => Boolean): Unit = {
+  if (assertionEnabled && p) println("myAssertWithByNameParameter: assertError!")
 }
-myAssertWithByNameParameter(5 > 3)
+myAssertWithByNameParameter(true, expensiveTrue) // expensiveTrue will be called
+myAssertWithByNameParameter(false, expensiveTrue) // expensiveTrue will not be called
 
-def myAssertWithBolleanParameter(p: Boolean): Unit = {
-  if (assertionEnabled && p) {
-    println("myAssertWithBolleanParameter: AssertionError!")
-  }
+def myAssertWithBolleanParameter(assertionEnabled: Boolean, p: Boolean): Unit = {
+  if (assertionEnabled && p) println("myAssertWithBolleanParameter: assertError!")
 }
-myAssertWithBolleanParameter(5 > 3)
+myAssertWithBolleanParameter(true, expensiveTrue) // expensiveTrue will be called
+myAssertWithBolleanParameter(false, expensiveTrue) // expensiveTrue will be called because it must be evaluated before passing p to myAssertWithBolleanParameter
 
 /**
  * myAssertWithByNameParameter: a function value will be created whose apply method will evaluate 5 > 3

@@ -20,6 +20,67 @@ package exercism
  * 10  9  8 7
  */
 object SpiralMatrix {
+  def spiralMatrix(size: Int): List[List[Int]] = {
+    if (size <= 0) List()
+    else InternalMatrix(size).spiralMatrix
+  }
+}
 
-  def spiralMatrix(size: Int): List[List[Int]] = ???
+private case class InternalMatrix(size: Int) {
+  require(size > 0)
+  private val matrix: Array[Array[Int]] = Array.ofDim[Int](size, size) // All elements have default value 0
+  val spiralMatrix: List[List[Int]] = {
+    var cell = Cell()
+    for ( v <- 1 to size * size ) {
+      cell = cell.next
+      matrix(cell.rowIndex)(cell.colIndex) = v
+    }
+
+    (0 until size).foldLeft(List[List[Int]]()) {
+      (acc: List[List[Int]], i: Int) => matrix(i).toList +: acc
+    }.reverse
+  }
+
+  private def valid(cell: Cell): Boolean = {
+    cell.rowIndex >= 0 && cell.rowIndex < size &&
+      cell.colIndex >= 0 && cell.colIndex < size &&
+      matrix(cell.rowIndex)(cell.colIndex) == 0
+  }
+
+  private case class Cell(rowIndex: Int = -1, colIndex: Int = -1, direction: Direction = Right) {
+    def next: Cell = (rowIndex, colIndex) match {
+      case (-1, -1) => Cell(0, 0, direction)
+      case _ =>
+        val nextCell = move(this.direction) // start with the direction that created this Cell
+        if (valid(nextCell)) nextCell
+        else move(this.direction.change) // there is only one other direction to try
+    }
+
+    private def move(dir: Direction): Cell = dir match {
+      case Right => Cell(rowIndex, colIndex + 1, dir)
+      case Left => Cell(rowIndex, colIndex - 1, dir)
+      case Up => Cell(rowIndex - 1, colIndex, dir)
+      case Down => Cell(rowIndex + 1, colIndex, dir)
+    }
+  }
+}
+
+private sealed trait Direction {
+  def change: Direction
+}
+
+private case object Right extends Direction {
+  override val change: Direction = Down
+}
+
+private case object Left extends Direction {
+  override val change: Direction = Up
+}
+
+private case object Up extends Direction {
+  override val change: Direction = Right
+}
+
+private case object Down extends Direction {
+  override val change: Direction = Left
 }

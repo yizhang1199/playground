@@ -31,43 +31,50 @@ object SpaceAge {
 
   def onNeptune(ageInSeconds: Double): Double = toEarthAgeInSeconds(ageInSeconds, Neptune)
 
-  private def toEarthAgeInSeconds(ageInSeconds: Double, planet: Planet): Double =
+  private def toEarthAgeInSeconds(ageInSeconds: Double, planet: Planet): Double = {
     ageInSeconds / (planet.orbitalPeriod * Earth.orbitalPeriodInSeconds)
+  }
 }
 
 sealed trait Planet {
+  /**
+   * Always use def, not val, in a trait for abstract members.
+   *
+   * Also, use parentheses if the method changes state; otherwise don’t.  But should a trait not know if
+   * an abstract member will change state during implementation?
+   */
   def orbitalPeriod: Double
 }
 
 case object Earth extends Planet {
   val orbitalPeriodInSeconds: Double = 31557600
-  override def orbitalPeriod: Double = 1.0
+  override val orbitalPeriod: Double = 1.0
 }
 
 case object Mercury extends Planet {
-  override def orbitalPeriod: Double = 0.2408467
+  override val orbitalPeriod: Double = 0.2408467
 }
 
 case object Venus extends Planet {
-  override def orbitalPeriod: Double = 0.61519726
+  override val orbitalPeriod: Double = 0.61519726
 }
 
 case object Mars extends Planet {
-  override def orbitalPeriod: Double = 1.8808158
+  override val orbitalPeriod: Double = 1.8808158
 }
 
 case object Jupiter extends Planet {
-  override def orbitalPeriod: Double = 11.862615
+  override val orbitalPeriod: Double = 11.862615
 }
 
 case object Saturn extends Planet {
-  override def orbitalPeriod: Double = 29.447498
+  override val orbitalPeriod: Double = 29.447498
 }
 
 case object Uranus extends Planet {
-  override def orbitalPeriod: Double = 84.016846
+  override val orbitalPeriod: Double = 84.016846
 }
 
 case object Neptune extends Planet {
-  override def orbitalPeriod: Double = 164.79132
+  override val orbitalPeriod: Double = 164.79132
 }

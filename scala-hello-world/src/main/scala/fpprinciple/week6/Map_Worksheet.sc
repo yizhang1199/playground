@@ -136,8 +136,23 @@ val spanTest2Expected = (
 )
 assert(spanTest2 == spanTest2Expected)
 
-val setData = Set("green", "oolong", "black", "puer")
-// returns: HashSet(e, n, u, a, b, p, c, r, k, o, g, l)
-val setFlaMapTest = setData.flatMap(_.toCharArray) // same as (p => p.toCharArray)
+// grouped Partitions elements in fixed size collections (the last one may not have enough) and returns an Iterator
+val groupedTest = mapWithSeqValues.grouped(1)
+//groupedTest.next() // Map("teas" -> List("green", "oolong"))
+val groupedTestExpectedList = List(
+  Map("teas" -> List("green", "oolong")),
+  Map("fruits" -> List("mango", "kiwi", "peach")),
+  Map("nuts" -> List("almond", "mac")))
+assert(groupedTestExpectedList == groupedTest.toList)
 
-// see sample implementations for map and flatMap in Monad_Worksheet.sc
+val groupedTest2 = mapWithSeqValues.grouped(2)
+//groupedTest2.next() // Map("teas" -> List("green", "oolong"), "fruits" -> List("mango", "kiwi", "peach"))
+val groupedTest2ExpectedList = List(
+  Map("teas" -> List("green", "oolong"), "fruits" -> List("mango", "kiwi", "peach")),
+  Map("nuts" -> List("almond", "mac"))) // last Map element only has 1 Key->Value
+assert(groupedTest2ExpectedList == groupedTest2.toList)
+
+mapWithSeqValues.unapply("teas") // Some(List(green, oolong))
+mapWithSeqValues.get("teas") // Some(List(green, oolong))
+mapWithSeqValues.apply("teas") // List(green, oolong)
+// also see sample implementations for map and flatMap in Monad_Worksheet.sc

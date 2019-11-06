@@ -3,8 +3,8 @@ package exercism
 import scala.annotation.tailrec
 
 object MatchingBrackets {
-  private val matchingPairs = Map(')' -> '(', ']' -> '[', '}' -> '{')
-  private val leftSides = Set('(', '[', '{')
+  private val rightToLeftMapping = Map(')' -> '(', ']' -> '[', '}' -> '{')
+  private val leftSides = rightToLeftMapping.values.toSet[Char]
 
   def isPaired(input: String): Boolean = {
     if (input.length == 0) true
@@ -16,12 +16,11 @@ object MatchingBrackets {
     remainder match {
       case head :: tail if leftSides.contains(head) =>
         isPaired(head :: processedStack, tail)
-      case head :: tail if matchingPairs.contains(head) && // found a right side
+      case head :: tail if rightToLeftMapping.contains(head) && // found a right side
         processedStack.nonEmpty &&
-        processedStack.head == matchingPairs(head) =>
+        processedStack.head == rightToLeftMapping(head) =>
         isPaired(processedStack.tail, tail)
-      case head :: _ if matchingPairs.contains(head) =>
-        false
+      case head :: _ if rightToLeftMapping.contains(head) => false
       case _ :: tail => isPaired(processedStack, tail)
       case List() => processedStack.isEmpty
     }

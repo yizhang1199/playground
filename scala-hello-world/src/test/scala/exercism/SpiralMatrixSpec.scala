@@ -46,4 +46,21 @@ class SpiralMatrixSpec extends FunSuite with Matchers {
         List(14, 23, 22, 21, 8),
         List(13, 12, 11, 10, 9)))
   }
+
+  test("spiral of size 10") {
+
+    //println(SpiralMatrix.spiralMatrix(10) mkString "\n")
+    SpiralMatrix.spiralMatrix(10) should be(
+      List(
+        List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        List(36, 37, 38, 39, 40, 41, 42, 43, 44, 11),
+        List(35, 64, 65, 66, 67, 68, 69, 70, 45, 12),
+        List(34, 63, 84, 85, 86, 87, 88, 71, 46, 13),
+        List(33, 62, 83, 96, 97, 98, 89, 72, 47, 14),
+        List(32, 61, 82, 95, 100, 99, 90, 73, 48, 15),
+        List(31, 60, 81, 94, 93, 92, 91, 74, 49, 16),
+        List(30, 59, 80, 79, 78, 77, 76, 75, 50, 17),
+        List(29, 58, 57, 56, 55, 54, 53, 52, 51, 18),
+        List(28, 27, 26, 25, 24, 23, 22, 21, 20, 19)))
+  }
 }
