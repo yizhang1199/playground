@@ -1,4 +1,4 @@
-package exercism
+package exercism.medium
 
 /**
  * https://exercism.io/my/solutions/81bfeb576250414aa314777fc8e5dcc4

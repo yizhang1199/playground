@@ -1,5 +1,6 @@
-package exercism
-import org.scalatest.{Matchers, FunSuite}
+package exercism.medium
+
+import org.scalatest.{FunSuite, Matchers}
 
 /** @version 1.3.0 */
 class PascalsTriangleSpec extends FunSuite with Matchers {

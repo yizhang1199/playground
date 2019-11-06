@@ -1,6 +1,6 @@
-package exercism
+package exercism.medium
 
-import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.{FunSuite, Matchers}
 
 /** @version 1.0.0 */
 class MatrixSpec extends FunSuite with Matchers {

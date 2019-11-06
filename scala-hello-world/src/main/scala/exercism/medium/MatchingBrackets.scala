@@ -1,4 +1,4 @@
-package exercism
+package exercism.medium
 
 import scala.annotation.tailrec
 

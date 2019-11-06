@@ -1,5 +1,6 @@
-package exercism
-import org.scalatest.{Matchers, FunSuite}
+package exercism.medium
+
+import org.scalatest.{FunSuite, Matchers}
 
 /** @version created manually **/
 class SeriesSpec extends FunSuite with Matchers {

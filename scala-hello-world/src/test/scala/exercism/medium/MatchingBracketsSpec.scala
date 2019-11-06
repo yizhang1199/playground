@@ -1,7 +1,6 @@
-package exercism
+package exercism.medium
 
-import org.scalatest.Matchers._
-import org.scalatest.{FunSuite, Matchers, WordSpec}
+import org.scalatest.{FunSuite, Matchers}
 
 class MatchingBracketsTest extends FunSuite with Matchers {
 
