@@ -142,3 +142,11 @@ val input = "A cow jumped over the moon"
 afterCompose(input)
 list1.apply(findIndex(input))
 list1(findIndex(input))
+
+Array.tabulate(2, 2)((x, y) => {
+  println(s"x=$x, y=$y")
+  x + y
+})
+
+val intArray = Array.fill[Int](3, 3)(0)
+intArray.transpose

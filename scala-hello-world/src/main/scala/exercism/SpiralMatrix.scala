@@ -26,35 +26,52 @@ object SpiralMatrix {
   }
 
   private def generate(size: Int): List[List[Int]] = {
-    val matrix: Array[Array[Int]] = Array.ofDim[Int](size, size) // All elements have default value 0
+    val matrix: Array[Array[Int]] = Array.fill[Int](size, size)(0)
+
     def indexInRange(i: Int): Boolean = i >= 0 && i < size
-    def valid(cell: Cell): Boolean =
+
+    def isLegal(cell: Cell): Boolean =
       indexInRange(cell.row) && indexInRange(cell.col) && matrix(cell.row)(cell.col) == 0
 
-    var cell = Cell(0, -1)
-    var direction: Direction = Right
+    var cell = Cell()
     for ( v <- 1 to size * size ) {
-      val nextTry = cell.move(direction) // first try current direction
-      if (valid(nextTry)) cell = nextTry
-      else {
-        direction = direction.change // there is only one other possible direction
-        cell = cell.move(direction)
-      }
+      cell = cell.next(isLegal).get
       matrix(cell.row)(cell.col) = v
     }
 
-    (0 until size).foldLeft(List[List[Int]]()) {
-      (acc: List[List[Int]], i: Int) => matrix(i).toList +: acc
+    matrix.foldLeft(List[List[Int]]()) {
+      (acc: List[List[Int]], row: Array[Int]) => row.toList +: acc
     }.reverse
   }
+
+  // some community solutions https://exercism.io/tracks/scala/exercises/spiral-matrix/solutions/04684321c9134a0f892017f295a6ed92
 }
 
-private case class Cell(row: Int, col: Int) {
-  def move(dir: Direction): Cell = dir match {
-    case Right => Cell(row, col + 1)
-    case Left => Cell(row, col - 1)
-    case Up => Cell(row - 1, col)
-    case Down => Cell(row + 1, col)
+/**
+ * A cell knows its own coordinates and the direction that got the cell here.  It knows how to move to the next cell
+ * based on the existing coordinates and direction.  It is; however, not aware of the matrix in which it resides
+ *
+ * @param row row index
+ * @param col col index
+ * @param direction direction in which the cell moved
+ */
+private case class Cell(row: Int = 0, col: Int = -1, direction: Direction = Right) {
+  /**
+   * Finds the next legal cell reachable from this cell.
+   *
+   * @param isLegal a function that tests if a cell is legal in the broader context.
+   * @return
+   */
+  def next(isLegal: Cell => Boolean): Option[Cell] = {
+    val possibleDirections = List(direction, direction.change)
+    possibleDirections.map(move).find(isLegal) // find the first legal move
+  }
+
+  private def move(dir: Direction): Cell = dir match {
+    case Right => Cell(row, col + 1, dir)
+    case Left => Cell(row, col - 1, dir)
+    case Up => Cell(row - 1, col, dir)
+    case Down => Cell(row + 1, col, dir)
   }
 }
 
