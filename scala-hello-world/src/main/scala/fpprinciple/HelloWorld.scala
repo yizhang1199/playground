@@ -12,10 +12,14 @@ object HelloWorld {
     println(z union y)
     println(y union z)
 
-    val str = "I'm a string."
-    str.grouped(3).foreach(println)
+    val str = "I'm a very very long string."
+    //str.grouped(3).foreach(println)
     println("groupBy:")
-    str.toSeq.groupBy(identity).foreach(println)
+    str.split(" ").groupBy(identity).foreach(pair => {
+      print(s"${pair._1}: ")
+      pair._2.foreach(print)
+      println()
+    })
   }
 }
 

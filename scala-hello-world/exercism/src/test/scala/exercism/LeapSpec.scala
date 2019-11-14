@@ -1,6 +1,6 @@
 package exercism
 
-import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.{FunSuite, Matchers}
 
 /** @version 1.3.0 */
 class LeapSpec extends FunSuite with Matchers {

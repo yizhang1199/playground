@@ -1,7 +1,7 @@
 package exercism
 
-import org.scalatest.WordSpec
 import org.scalatest.Matchers._
+import org.scalatest.WordSpec
 
 class TwoferSpec extends WordSpec {
   "Twofer" should {

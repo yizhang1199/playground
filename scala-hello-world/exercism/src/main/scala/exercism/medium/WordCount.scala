@@ -58,4 +58,30 @@ case class WordCount(words: String) {
   }
 
   private def isLetterOrDigitOrApostrophe(char: Char): Boolean = char.isLetterOrDigit || char == apostrophe.charAt(0)
+
+  /**
+   * Alternative solutions from the community.  Must better use of regex.
+   *
+   * https://exercism.io/tracks/scala/exercises/word-count/solutions/1b67c9008b4048e4942bde92d4819f6e
+   */
+  import scala.collection.mutable.{Map => MMap}
+  def countWordsFromCommunity(): Map[String, Int] = {
+    val sanitized = words.toLowerCase.replaceAll("""\W'|'\W|[^\w']+""", " ")
+//    usingFoldLeft(sanitized)
+      usingGrouping(sanitized)
+  }
+
+  // 49 ms
+  private def usingFoldLeft(words: String): Map[String, Int] =
+    words.split(' ').foldLeft(MMap[String, Int]()) { (acc, w) =>
+      if (!w.isEmpty) { acc.put(w, acc.getOrElse(w, 0) + 1) }
+      acc
+    }.toMap  // mutable to immutable
+
+  // 64 ms
+  private def usingGrouping(words: String): Map[String, Int] =
+    words.split(' ')
+      .filter(!_.isEmpty)
+      .groupBy(identity)
+      .view.mapValues(_.length).toMap
 }

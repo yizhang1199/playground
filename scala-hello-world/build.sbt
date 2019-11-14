@@ -44,3 +44,9 @@ lazy val `rock-the-jvm-scala-advanced` = sbt.project
   .settings(
     name := "rock-the-jvm-scala-advanced"
   )
+
+lazy val exercism = sbt.project
+  .settings(commonSettings)
+  .settings(
+    name := "exercism"
+  )
