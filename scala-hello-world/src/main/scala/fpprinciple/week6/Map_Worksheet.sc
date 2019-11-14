@@ -156,3 +156,9 @@ mapWithSeqValues.unapply("teas") // Some(List(green, oolong))
 mapWithSeqValues.get("teas") // Some(List(green, oolong))
 mapWithSeqValues.apply("teas") // List(green, oolong)
 // also see sample implementations for map and flatMap in Monad_Worksheet.sc
+
+val immutableMap = Map("key1" -> 1, "key2" -> 2)
+// Map(key3 -> 3, key2 -> 2, key1 -> 1)
+val immutableMap2 = Map("key3" -> 3, "key2" -> 4) ++ immutableMap
+// Map(key1 -> 1, key2 -> 4)
+val immutableMap3 = immutableMap + ("key2" -> 4)

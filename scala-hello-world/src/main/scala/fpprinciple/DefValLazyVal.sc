@@ -43,7 +43,7 @@ expr // output will be: val; def; def; lazy val;
 // https://blog.jessitron.com/2012/07/10/choices-with-def-and-val-in-scala/
 // rule of thumb: use parentheses if the method changes state; otherwise don’t.
 def spaceAge: Double = 1.0 // can only be accessed without ()
-def spaceAge2(): Double = 2.0  // can be accessed with or without ()
+def spaceAge2(): Double = 2.0 // can be accessed with or without ()
 
 spaceAge // ok
 //spaceAge() // compilation error
@@ -77,9 +77,19 @@ spaceAge2() // ok
  */
 // Lambda expression (also called anonymous function) is a function definition that is
 // not bound to an identifier. The latter is a named function
-// donNothing is a function value created at runtime, whose apply method will evaluate the function literal "(_: Int) => {}"
-val doNothing: Int => Unit = (_: Int) => {} // doNothing's type is explicitly defined
-val doNothing2 = (_: Int) => {} // doNothing2's type is inferred
+// doNothing is a function value created at runtime, whose apply method will evaluate the function literal "(_: Int) => {}"
+val doNothing: Int => Unit = (x: Int) => {
+  println(s"do nothing with $x")
+} // doNothing's type is explicitly defined
+// doNothing2's type is inferred
+val doNothing2 = (x: Int) => println(s"do nothing2 with $x")
+doNothing(1)
+doNothing(2)
+doNothing2(3)
+doNothing2(4)
+// empty-parameter
+val doNothing3 = () => println("do nothing with nothing")
+
 val lambdaExpr2: (Int, Int) => Int = (x: Int, y: Int) => {
   x + y
 }

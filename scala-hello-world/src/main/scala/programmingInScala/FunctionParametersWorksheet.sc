@@ -1,7 +1,7 @@
 // Repeated parameters: variable length argument lists
 def echo(args: String*) = {
   println("args=" + args)
-  for (arg <- args) println(arg)
+  for ( arg <- args ) println(arg)
 }
 echo()
 echo("Hello", "Kitty")
@@ -17,58 +17,73 @@ echo(List("Hello", "too"): _*)
 // TODO tight coupling?  What if parameter names change?
 def speed(distance: Float, time: Float): Float = distance / time
 speed(100, 10)
-speed(time=10, distance=100)
+speed(time = 10, distance = 100)
 
 // Default arguements
 def greet(out: java.io.PrintStream = Console.out,
-          name: String = "World") : Unit = {
+          name: String = "World"): Unit = {
   out.println(s"Hello $name")
 }
 greet()
-greet(name="Kitty")
-greet(out=Console.err)
-
-// By-name parameters (mostly for functions that take no arguements?)
-// https://learning.oreilly.com/library/view/programming-in-scala/9780981531687/control-abstraction.html
-def expensiveTrue() : Boolean = {
-  println("expensiveTrue: taking lots of time")
-  true
-}
-// p is a "normal" parameter that represents a function that takes no arguement and returns Boolean
-def myAssertWithFunction(assertionEnabled: Boolean, p: () => Boolean): Unit = {
-  if (assertionEnabled && p()) println("myAssertWithFunction: assertError!")
-}
-myAssertWithFunction(true, expensiveTrue) // expensiveTrue will be called
-myAssertWithFunction(false, expensiveTrue) // expensiveTrue will not be called
-
-// p is a by-name parameter that represents a function that takes no arguement and returns Boolean
-def myAssertWithByNameParameter(assertionEnabled: Boolean, p: => Boolean): Unit = {
-  if (assertionEnabled && p) println("myAssertWithByNameParameter: assertError!")
-}
-myAssertWithByNameParameter(true, expensiveTrue) // expensiveTrue will be called
-myAssertWithByNameParameter(false, expensiveTrue) // expensiveTrue will not be called
-
-def myAssertWithBolleanParameter(assertionEnabled: Boolean, p: Boolean): Unit = {
-  if (assertionEnabled && p) println("myAssertWithBolleanParameter: assertError!")
-}
-myAssertWithBolleanParameter(true, expensiveTrue) // expensiveTrue will be called
-myAssertWithBolleanParameter(false, expensiveTrue) // expensiveTrue will be called because it must be evaluated before passing p to myAssertWithBolleanParameter
+greet(name = "Kitty")
+greet(out = Console.err)
 
 /**
- * myAssertWithByNameParameter: a function value will be created whose apply method will evaluate 5 > 3
- * before myAssertWithByNameParameter is called. If assertionEnabled is false, "5>3" will NOT
- * be evaluated.
+ * By-name parameters are only evaluated when used. They are in contrast to by-value parameters.
+ * To make a parameter called by-name, simply prepend => to its type.
  *
- * myAssertWithBolleanParameter: "5>3" will always be evaluated before myAssertWithBolleanParameter is called.
- */
+ * By-name parameters: only evaluated when used in the function body
+ * By-value parameters: always evaluated, but only evaluated once
+ *
+ * https://docs.scala-lang.org/tour/by-name-parameters.html
+ **/
+// both condition and body are by-name parameters
+def whileLoop(condition: => Boolean)(body: => Unit): Unit = {
+  if (condition) {
+    body
+    whileLoop(condition)(body)
+  }
+}
+var i = 2
+whileLoop(i > 0) {
+  println(s"in whileloop: i=$i")
+  i -= 1
+}
+// whileLoop2 has the same effect as whileLoop but uses empty-param functions,
+// e.g. condition is a function that take no parameters and returns a Boolean.
+def whileLoop2(condition: () => Boolean)(body: () => Unit): Unit = {
+  if (condition()) {
+    body()
+    whileLoop(condition())(body())
+  }
+}
+i = 2
+whileLoop2(() => i > 0) { // notice the cumbersome syntax required
+  () => {
+    println(s"in whileloop2: i=$i")
+    i -= 1
+  }
+}
+// since condition is a by-value parameter, it's only evaluated once.  We have
+// an infinite loop if condition evaluates to true when infiniteloop is called
+def infiniteloop(condition: Boolean)(body: => Unit): Unit = {
+  if (condition) {
+    body
+    infiniteloop(condition)(body)
+  }
+}
 
+/**
+ * Parameter-less method vs empty-param method
+ */
 // A parameter-less method:
 // (Convention) Has NO side effects and accesses mutable state only by reading fields of the containing object
-// Called using field selection syntax.
+// Called using field selection syntax, e.g. without ()
 // Can be changed (in the same class) to a field without impacting client code, e.g. val value = seed + 2
 // Can be overridden (in sub classes) with a val
 var seed = 3
 def value: Int = seed + 2
+
 // An empty-param method:
 // (Convention) Has side effects or depends on mutable state outside the containing object
 // (Convention) Should be called with (), e.g. value2()
@@ -80,7 +95,6 @@ def value2(): Int = {
 }
 
 value
-value2
+//value() // won't compile
+value2 // legal but trigger compiler warning
 value2()
-
-val x2: AnyRef = List()

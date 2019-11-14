@@ -11,7 +11,11 @@ object HelloWorld {
     println(y)
     println(z union y)
     println(y union z)
-    scala.AnyRef
+
+    val str = "I'm a string."
+    str.grouped(3).foreach(println)
+    println("groupBy:")
+    str.toSeq.groupBy(identity).foreach(println)
   }
 }
 
