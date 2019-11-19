@@ -25,17 +25,11 @@ class School {
   type DB = Map[Int, Seq[String]]
   private var database: DB = TreeMap[Int, Seq[String]]()
 
-  def add(name: String, g: Int): Unit = database.get(g) match {
-    case Some(x) => database += (g -> (x :+ name)) // Vector has constant append
-    case None => database += (g -> Vector(name))
-  }
+  def add(name: String, g: Int): Unit = database += g -> (database.getOrElse(g, Vector()) :+ name) // Vector has constant append
 
   def db: DB = database
 
-  def grade(g: Int): Seq[String] = db.get(g) match {
-    case Some(x) => x
-    case None => List()
-  }
+  def grade(g: Int): Seq[String] = db.getOrElse(g, List())
 
   def sorted: DB =
     database.keySet.foldLeft(Map[Int, Seq[String]]()) {
