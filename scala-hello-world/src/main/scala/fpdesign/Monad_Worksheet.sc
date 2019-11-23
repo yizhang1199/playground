@@ -13,20 +13,17 @@
 // unit/return: (a) -> M a
 // bind: (M a, f: a -> M b) -> M b
 
-// To qualify as a Monad, a type must satisfy the following monadic laws:  (in this case the flatMap is the combining operation)
-// Associativity: (m flatMap f) flatMap g ≡ m flatMap (x => f(x) flatMap g)
-// Left unit/identity: unit(x) flatMap f ≡ f(x)
-// Right unit/identity: m flatMap unit ≡ m
-
 // Why use the Monad pattern:
 // Compositionality: ability to compose complex functions from simple functions (mix and match a small set of small functions in arbitrary ways to build large complex systems).  The Monad (the M in M a) hides complexity of side effects, concurrency, I/O, etc.
 // Reduces code duplication/bolier plate, e.g. null checks
 
 /**
- * Scala specific
  * Scala video: https://www.youtube.com/watch?v=X2D2QIKRfi8&list=PLLJhMcMkpqT2KFvAj0SsCRPTAa8Vsp1wM&index=10
  */
-//
+// To qualify as a Monad, a type must satisfy the following monadic laws:  (flatMap, aka bind, is the combining operation)
+// Associativity: (m flatMap f) flatMap g ≡ m flatMap (x => f(x) flatMap g)
+// Left unit/identity: unit(x) flatMap f ≡ f(x)
+// Right unit/identity: m flatMap unit ≡ m
 // In scala, bind is referred to as flatMap.  Every Scala Monhad type must define the following two functions
 trait M[T] {
   def map[U](f: T => U) : M[U] // the unit function is different for each type

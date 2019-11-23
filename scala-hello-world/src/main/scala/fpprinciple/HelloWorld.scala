@@ -1,5 +1,7 @@
 package fpprinciple
 
+import java.util.regex.{Matcher, Pattern}
+
 object HelloWorld {
   def main(args: Array[String]): Unit = {
     println("Hello World!")
@@ -20,6 +22,15 @@ object HelloWorld {
       pair._2.foreach(print)
       println()
     })
+
+    // Pattern.compile(".+/ingest_date=([\\d]{14})")
+    val ingestDatePattern = Pattern.compile(".+/ingest_date=([\\d]{14})")
+
+    val location = "s3://idl-batch-ued-processed-uw2-data-lake-prd/datasets/ued_qbo_psa.db/companies_vw/ingest_date=20191120103538"
+
+    val matcher = ingestDatePattern.matcher(location)
+    println("matched=" + matcher.matches())
+    println("ingest_date=" + matcher.group(1))
   }
 }
 
