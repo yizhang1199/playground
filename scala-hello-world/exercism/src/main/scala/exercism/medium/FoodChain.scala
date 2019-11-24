@@ -62,6 +62,9 @@ import scala.annotation.tailrec
  * She's dead, of course!
  */
 object FoodChain {
+
+  import Animal.{animals, startAnimal}
+
   def recite(startParagraph: Int, endParagraph: Int): String = {
     require(startParagraph <= endParagraph &&
       animals.get(startParagraph).isDefined && animals.get(endParagraph).isDefined)
@@ -70,25 +73,13 @@ object FoodChain {
     lyrics mkString ""
   }
 
-  import Animal._
-
-  private val animals: Map[Int, Animal] = Map(
-    1 -> fly,
-    2 -> spider,
-    3 -> bird,
-    4 -> cat,
-    5 -> dog,
-    6 -> goat,
-    7 -> cow,
-    8 -> horse
-  )
-
   private def generate(key: Int): String = {
     require(animals.get(key).isDefined)
-    var phrases = Vector(s"I know an old lady who swallowed a ${animals(key).name}.", animals(key).phrase)
-    if (animals(key).myPrey.isDefined) {
-      phrases = phrases :++ generatePreyPhrases(animals(key))
-      phrases = phrases :+ animals(1).phrase
+    val animal = animals(key)
+    var phrases = Vector(s"I know an old lady who swallowed a ${animal.name}.", animal.phrase)
+    if (animal.myPrey.isDefined) {
+      phrases = phrases :++ generatePreyPhrases(animal)
+      phrases = phrases :+ startAnimal.phrase
     }
     phrases.mkString("", "\n", "\n\n")
   }
@@ -103,16 +94,28 @@ object FoodChain {
   }
 }
 
-case class Animal(name: String, phrase: String, myPrey: Option[Animal] = None, action: Option[String] = None)
+private[medium] case class Animal(name: String, phrase: String, myPrey: Option[Animal] = None, action: Option[String] = None)
 
-object Animal {
-  val fly = Animal("fly", "I don't know why she swallowed the fly. Perhaps she'll die.")
-  val spider = Animal("spider", "It wriggled and jiggled and tickled inside her.", Some(fly),
+private[medium] object Animal {
+  private[medium] val fly = Animal("fly", "I don't know why she swallowed the fly. Perhaps she'll die.")
+  private[medium] val spider = Animal("spider", "It wriggled and jiggled and tickled inside her.", Some(fly),
     Some(" that wriggled and jiggled and tickled inside her."))
-  val bird = Animal("bird", "How absurd to swallow a bird!", Some(spider))
-  val cat = Animal("cat", "Imagine that, to swallow a cat!", Some(bird))
-  val dog = Animal("dog", "What a hog, to swallow a dog!", Some(cat))
-  val goat = Animal("goat", "Just opened her throat and swallowed a goat!", Some(dog))
-  val cow = Animal("cow", "I don't know how she swallowed a cow!", Some(goat))
-  val horse = Animal("horse", "She's dead, of course!")
+  private[medium] val bird = Animal("bird", "How absurd to swallow a bird!", Some(spider))
+  private[medium] val cat = Animal("cat", "Imagine that, to swallow a cat!", Some(bird))
+  private[medium] val dog = Animal("dog", "What a hog, to swallow a dog!", Some(cat))
+  private[medium] val goat = Animal("goat", "Just opened her throat and swallowed a goat!", Some(dog))
+  private[medium] val cow = Animal("cow", "I don't know how she swallowed a cow!", Some(goat))
+  private[medium] val horse = Animal("horse", "She's dead, of course!")
+
+  private[medium] val animals: Map[Int, Animal] = Map(
+    1 -> fly,
+    2 -> spider,
+    3 -> bird,
+    4 -> cat,
+    5 -> dog,
+    6 -> goat,
+    7 -> cow,
+    8 -> horse
+  )
+  private[medium] val startAnimal = animals(1)
 }
