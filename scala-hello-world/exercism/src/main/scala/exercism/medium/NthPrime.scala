@@ -32,7 +32,8 @@ object NthPrime {
     case fives if fives % 5 == 0 => false
     case sevens if sevens % 7 == 0 => false
     case _ =>
-      val max = candidate / 11
+      val max = candidate / 11 // "big prime" takes 253-311 ms
+      //val max = math.sqrt(candidate).toInt // sqrt speeds up "big prime" to 40-56 ms
       val found = (3 to max by 2).find(candidate % _ == 0)
       found match {
         case Some(_) => false

@@ -15,6 +15,28 @@ concat2(List("a", "b"), List("c", "d"))
 
 val zipTest = List("a", "b") zip List("c", "d", "e")
 
+/**
+ * for (p0 <- expr0) yield expr
+ *    is translated to
+ * expr0.map(p0 => expr)
+ *
+ * for {p0 <- expr0
+ *      p1 <- expr1
+ *      p2 <- expr2
+ *      ...
+ *      pX <- exprX}
+ * yield expr
+ *
+ *    is translated recursively using flatMap for expr1 through exprX-1 and map for exprX
+ *
+ * expr0.flatMap {p0 =>
+ *   for {p1 <- expr1
+ *        p2 <- expr2
+ *        ...
+ *        pX <- exprX}
+ *   yield expr
+ * }
+ */
 def forFun1[T](first: List[T], second: List[T]): List[List[T]] = {
   for {
     t <- second
