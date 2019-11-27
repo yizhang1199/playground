@@ -69,7 +69,7 @@ object FoodChain {
     require(startParagraph <= endParagraph &&
       animals.get(startParagraph).isDefined && animals.get(endParagraph).isDefined)
 
-    val lyrics = for ( i <- startParagraph to endParagraph ) yield generate(i)
+    val lyrics = (startParagraph to endParagraph).map(generate)
     lyrics mkString ""
   }
 
@@ -77,6 +77,7 @@ object FoodChain {
     require(animals.get(key).isDefined)
     val animal = animals(key)
     var phrases = Vector(s"I know an old lady who swallowed a ${animal.name}.", animal.phrase)
+
     if (animal.myPrey.isDefined) {
       phrases = phrases :++ generatePreyPhrases(animal)
       phrases = phrases :+ startAnimal.phrase

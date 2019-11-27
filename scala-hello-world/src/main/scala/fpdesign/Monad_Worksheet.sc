@@ -32,8 +32,8 @@
  */
 // To qualify as a Monad, a type must satisfy the following monadic laws:  (flatMap, aka bind, is the combining operation)
 // Associativity: (m flatMap f) flatMap g ≡ m flatMap (x => f(x) flatMap g)
-// Left unit/identity: unit(x) flatMap f ≡ f(x)
-// Right unit/identity: m flatMap unit ≡ m
+// Left identity/unit: unit(x) flatMap f ≡ f(x)
+// Right identity/unit: m flatMap unit ≡ m
 // In scala, bind is referred to as flatMap.  Every Scala Monhad type must define the following two functions
 trait M[T] {
   def map[U](f: T => U): M[U] // the unit function is different for each type

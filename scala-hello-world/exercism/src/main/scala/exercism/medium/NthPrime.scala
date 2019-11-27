@@ -12,9 +12,10 @@ import scala.annotation.tailrec
  * If your language provides methods in the standard library to deal with prime numbers, pretend they don't exist and implement them yourself.
  */
 object NthPrime {
-  def prime(n: Int): Option[Int] =
+  def prime(n: Int): Option[Int] = {
     if (n <= 0) None
     else Some((primes take n).last)
+  }
 
   private val primes: LazyList[Int] = 2 #:: primes.map(p => next(p + 1))
 
@@ -41,18 +42,6 @@ object NthPrime {
       }
   }
 
-  // Alternative solution from the community that's much faster
+  // Alternative solution from the community that's much faster as it uses math.sqrt(prime) as the max in isPrime
   // https://exercism.io/tracks/scala/exercises/nth-prime/solutions/bd6b2466bc074102aeb2b35fa3e249a8
-  private def isPrimeMuchFaster(prime: Int): Boolean = prime match {
-    case p if p == 0 || p == 1 => false
-    case p if p == 2 || p == 3 => true
-    case p if p % 2 == 0 => false
-    case _ =>
-      val max = math.sqrt(prime).toInt
-      (3 to max by 2).foreach { i =>
-        if (prime % i == 0) return false
-      }
-
-      true
-  }
 }
