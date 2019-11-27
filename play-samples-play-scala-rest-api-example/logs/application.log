@@ -1,0 +1,11 @@
+2019-10-30 16:39:45,885 [INFO] from play.api.http.EnabledFilters in play-dev-mode-akka.actor.default-dispatcher-4 - Enabled Filters (see <https://www.playframework.com/documentation/latest/Filters>):
+
+    play.filters.csrf.CSRFFilter
+    play.filters.headers.SecurityHeadersFilter
+    play.filters.hosts.AllowedHostsFilter
+
+2019-10-30 16:39:45,891 [INFO] from play.api.Play in play-dev-mode-akka.actor.default-dispatcher-4 - Application started (Dev) (no global state)
+2019-10-30 16:39:46,384 [TRACE] from v1.post.PostActionBuilder in application-akka.actor.default-dispatcher-6 - invokeBlock: 
+2019-10-30 16:39:46,385 [TRACE] from v1.post.PostController in application-akka.actor.default-dispatcher-6 - process: 
+2019-10-30 16:39:46,405 [INFO] from v1.post.PostRepositoryImpl in application-repository.dispatcher-7 - create: data = PostData(999,thought of the day,nothing beats a cup of good tea)
+2019-10-31 11:01:16,070 [INFO] from play.core.server.AkkaHttpServer in pool-16-thread-4 - Stopping server...
