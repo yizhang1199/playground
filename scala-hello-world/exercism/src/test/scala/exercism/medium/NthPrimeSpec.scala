@@ -1,9 +1,9 @@
 package exercism.medium
 
-import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.{FunSuite, Matchers}
 
 /** @version 2.1.0 */
-class NthPrimeTest extends FunSuite with Matchers {
+class NthPrimeSpec extends FunSuite with Matchers {
 
   test("first prime") {
     NthPrime.prime(1) should be(Some(2))

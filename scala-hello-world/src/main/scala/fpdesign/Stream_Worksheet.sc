@@ -1,6 +1,6 @@
 // Stream has been deprecated and replaced by LazyList starting from 2.13.0
-def from(n : Int): LazyList[Int] = {
-  n #:: from(n+1)
+def from(n: Int): LazyList[Int] = {
+  n #:: from(n + 1)
 }
 
 from(1).take(19).toList
@@ -13,20 +13,19 @@ def sieve(list: LazyList[Int]): LazyList[Int] = {
 def primes: LazyList[Int] = sieve(from(2))
 primes.take(100).toList
 
+def squareRoot(n: Double): Seq[Double] = {
 
-def squareRoot(n : Double) : Seq[Double] = {
-
-  def isGoodEnough(guess: Double) : Boolean = {
+  def isGoodEnough(guess: Double): Boolean = {
     Math.abs(n - guess * guess) <= 0.00001
   }
 
-  def nextGuess(currentGuess: Double) : Double = {
-    (currentGuess + n/currentGuess)/2
+  def nextGuess(currentGuess: Double): Double = {
+    (currentGuess + n / currentGuess) / 2
   }
 
   lazy val guesses: LazyList[Double] = 1.0 #:: (guesses map nextGuess)
 
-  guesses.filter(p=>isGoodEnough(p)).take(5).toList
+  guesses.filter(p => isGoodEnough(p)).take(5).toList
 }
 
-squareRoot(5)
+squareRoot(5.0)

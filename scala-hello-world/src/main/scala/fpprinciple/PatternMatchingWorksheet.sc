@@ -38,8 +38,8 @@ object singleDigit {
     else Some(false) // caller must know false is used for no match
 }
 
-// syntactical sugar for unapply that returns Option[Boolean]
-// This is preferred
+// Preferred for readability: syntactical sugar for unapply that returns Option[Boolean]
+// Also see exercism.Bob for a simper example
 object negative {
   def unapply(n: Int): Boolean = n < 0
 }

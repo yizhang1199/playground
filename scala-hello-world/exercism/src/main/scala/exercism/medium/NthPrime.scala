@@ -9,15 +9,16 @@ import scala.annotation.tailrec
  *
  * By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.
  *
- * If your language provides methods in the standard library to deal with prime numbers, pretend they don't exist and implement them yourself.
+ * If your language provides methods in the standard library to deal with prime numbers, pretend they don't
+ * exist and implement them yourself.
  */
 object NthPrime {
   def prime(n: Int): Option[Int] = {
     if (n <= 0) None
-    else Some((primes take n).last)
+    else Some((Primes take n).last)
   }
 
-  private val primes: LazyList[Int] = 2 #:: primes.map(p => next(p + 1))
+  private val Primes: LazyList[Int] = 2 #:: Primes.map(p => next(p + 1))
 
   @tailrec
   private def next(candidate: Int): Int = {
@@ -26,15 +27,11 @@ object NthPrime {
   }
 
   private def isPrime(candidate: Int): Boolean = candidate match {
-    case x if x <= 1 => false
+    case x: Int if x <= 1 => false
     case 2 | 3 | 5 | 7 => true
-    case twos if twos % 2 == 0 => false
-    case threes if threes % 3 == 0 => false
-    case fives if fives % 5 == 0 => false
-    case sevens if sevens % 7 == 0 => false
+    case twos: Int if twos % 2 == 0 => false
     case _ =>
-      val max = candidate / 11 // "big prime" takes 253-311 ms
-      //val max = math.sqrt(candidate).toInt // sqrt speeds up "big prime" to 40-56 ms
+      val max = candidate / 2 // changing max to sqrt(candidate) drastically speeds up isPrime for big primes
       val found = (3 to max by 2).find(candidate % _ == 0)
       found match {
         case Some(_) => false

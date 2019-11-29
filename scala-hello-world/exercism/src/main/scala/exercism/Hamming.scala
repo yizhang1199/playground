@@ -32,11 +32,11 @@ package exercism
 object Hamming {
 
   def distance(dnaSeq1: String, dnaSeq2: String): Option[Int] = {
-    def difference(pair: (Char, Char)): Int = if (pair._1 == pair._2) 0 else 1
+    def different(pair: (Char, Char)): Boolean = pair._1 != pair._2
 
     if (dnaSeq1.length != dnaSeq2.length) None
     else {
-      val differences = dnaSeq1.zip(dnaSeq2).foldLeft(0)((z, pair) => z + difference(pair))
+      val differences = dnaSeq1.zip(dnaSeq2).count(different)
       Some(differences)
     }
   }

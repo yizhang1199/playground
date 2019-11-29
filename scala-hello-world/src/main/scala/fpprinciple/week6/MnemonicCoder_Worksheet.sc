@@ -2,6 +2,7 @@
 // http://scalagwt.github.io/samples/Mnemonics.html
 // https://github.com/frankh/coursera-scala
 
+import scala.annotation.tailrec
 import scala.io.Source
 
 /* read a file of words */

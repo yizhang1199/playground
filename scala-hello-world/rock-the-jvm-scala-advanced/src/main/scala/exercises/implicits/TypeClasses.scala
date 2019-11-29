@@ -21,9 +21,7 @@ object TypeClasses extends App {
 
     // With the apply method, this is not necessary as the equal method must be implemented on all instances
     // of the type class
-    //def equal[T](t1: T, t2: T)(implicit equality: Equal[T]): Boolean = equality.equal(t1, t2)
-
-    def blah: String = "blah"
+    // def equal[T](t1: T, t2: T)(implicit equality: Equal[T]): Boolean = equality.equal(t1, t2)
   }
 
   object NameEquality extends Equal[User] { // Type class instance
