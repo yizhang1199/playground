@@ -29,7 +29,6 @@ import scala.annotation.tailrec
  * Each letter must represent a different digit, and the leading digit of a multi-digit number must not be zero.
  */
 object Alphametics {
-
   def solve(input: String): Option[Map[Char, Int]] = {
     val sanitized = input.replaceAll("[\\s]+", "").toUpperCase
 
@@ -44,18 +43,18 @@ object Alphametics {
   }
 }
 
-case class AlphabetAddition(addends: Seq[String], sum: String) {
-  private val distinctAlphabets: Seq[Char] = (sum +: addends).flatten.distinct
-  private val nonZeroAlphabets: Set[Char] = {
+case class AlphabetAddition(addends: List[String], sum: String) {
+  private lazy val distinctAlphabets: List[Char] = (sum +: addends).flatten.distinct
+  private lazy val nonZeroAlphabets: Set[Char] = {
     var alphas = addends.collect {
       case addend: String if isMultiDigit(addend) => addend(0)
     }
 
     if (isMultiDigit(sum)) {
-      alphas = sum(0) +: alphas // prepend is O(1)
+      alphas = sum(0) :: alphas // cons is O(1)
     }
 
-    alphas.toSet
+    alphas.toSet // Use Set for O(1) contains
   }
 
   def solve: Option[Map[Char, Int]] = {
@@ -66,7 +65,7 @@ case class AlphabetAddition(addends: Seq[String], sum: String) {
 
   private def isValid(solution: Map[Char, Int]): Boolean = {
     def toInt(str: String): Int = {
-      str.map(solution(_)).foldLeft(0) {
+      str.map(solution).foldLeft(0) {
         (accumulator: Int, digit: Int) => accumulator * 10 + digit
       }
     }
@@ -79,7 +78,7 @@ case class AlphabetAddition(addends: Seq[String], sum: String) {
 
   private def isComplete(solution: Map[Char, Int]): Boolean = {
     distinctAlphabets.length == solution.size &&
-      distinctAlphabets.filterNot(char => solution.keySet.contains(char)).isEmpty
+      distinctAlphabets.forall(char => solution.keySet.contains(char))
   }
 
   private def getAllowedDigits(alphabet: Char): Seq[Int] = {
@@ -89,8 +88,8 @@ case class AlphabetAddition(addends: Seq[String], sum: String) {
   }
 
   private def merge(solutionsMerged: Seq[Map[Char, Int]],
-                    solutions: Seq[Map[Char, Int]]): Seq[Map[Char, Int]] = {
-    (solutionsMerged, solutions) match {
+                    solutionsToBeMerged: Seq[Map[Char, Int]]): Seq[Map[Char, Int]] = {
+    (solutionsMerged, solutionsToBeMerged) match {
       case (solution1@Seq(_*), Seq()) =>
         solution1
       case (Seq(), solution2@Seq(_*)) =>
@@ -99,7 +98,7 @@ case class AlphabetAddition(addends: Seq[String], sum: String) {
         for {
           s1 <- solutionsMerged
           s1Values = s1.values.toSet
-          s2 <- solutions
+          s2 <- solutionsToBeMerged
           (key2, value2) <- s2 if !s1Values.contains(value2)
         } yield s1 + (key2 -> value2)
     }
