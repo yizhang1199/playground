@@ -89,11 +89,13 @@ object FoodChain {
 
   @tailrec
   private def generatePreyPhrases(animal: Animal, phrases: Seq[String] = Seq()): Seq[String] = {
-    if (animal.myPrey.isDefined) {
-      val prey = animal.myPrey.get
-      val phrase = s"She swallowed the ${animal.name} to catch the ${prey.name}${prey.action.getOrElse(".")}"
-      generatePreyPhrases(prey, phrase +: phrases)
-    } else phrases.reverse
+    animal.myPrey match {
+      case Some(prey) =>
+        val phrase = s"She swallowed the ${animal.name} to catch the ${prey.name}${prey.action.getOrElse(".")}"
+        generatePreyPhrases(prey, phrase +: phrases)
+      case None =>
+        phrases.reverse
+    }
   }
 }
 
