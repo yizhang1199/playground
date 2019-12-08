@@ -78,10 +78,11 @@ object TypeClasses extends App {
       myEqual.areEqual(value, anotherValue)
     }
 
-    def tsNotEqual[T: MyEqual](anotherValue: T): Boolean = { // use context bound syntax sugar, preferred
-      val myEqual = implicitly[MyEqual[T]]
-      !myEqual.areEqual(value, anotherValue)
-    }
+    // TODO this fails with "type mismatch" but why?
+//    def tsEqual[T: MyEqual](anotherValue: T): Boolean = { // use context bound syntax sugar, preferred
+//      val myEqual = implicitly[MyEqual[T]]
+//      myEqual.areEqual(value, anotherValue)
+//    }
   }
 
   val bob1 = User("Bob", 111, "bob1@gmail.com")
