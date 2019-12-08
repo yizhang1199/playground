@@ -6,18 +6,6 @@
  * lazy val: lazy evaluation -> evaluated once when it's accessed for the first time and computed value cached.
  * Subsequent access will use previously computed value.
  */
-/**
- * Always use def, not val, in a trait for abstract members.
- *
- * https://stackoverflow.com/questions/19642053/when-to-use-val-or-def-in-scala-traits
- * A def can be implemented by either of a def, a val, a lazy val or an object. So it's the most abstract form of defining a member.
- * Since traits are usually abstract interfaces, saying you want a val is saying how the implementation should do.
- *
- * https://blog.jessitron.com/2012/07/10/choices-with-def-and-val-in-scala/
- * In a subclass, you can override a def with a val or a def, but you can only override a val with a val.
- * When Scala has a val, it knows the value of that expression will never change. This is not true with def; therefore
- * declaring something as val says more than declaring a def.
- */
 def expr: Int = {
   val valExample = {
     print("val; ");
@@ -51,9 +39,34 @@ spaceAge2 // ok
 spaceAge2() // ok
 
 /**
+ * Always use def, not val, in a trait for abstract members.  Even if val in the trait defines a function expression,
+ * can't use def to define the function - see Example below.
+ *
+ * https://stackoverflow.com/questions/19642053/when-to-use-val-or-def-in-scala-traits
+ * A def can be implemented by a def, a val, a lazy val or an object. So it's the most abstract form of defining a member.
+ * Since traits are usually abstract interfaces, saying you want a val is saying how the implementation should do.
+ *
+ * https://blog.jessitron.com/2012/07/10/choices-with-def-and-val-in-scala/
+ * In a subclass, you can override a def with a val or a def, but you can only override a val with a val.
+ * When Scala has a val, it knows the value of that expression will never change. This is not true with def;
+ * therefore declaring something as val says more than declaring a def.
+ */
+trait MyTrait {
+  def sayHello(name: String): String
+  val greet: String => String
+}
+
+class MyImpl extends MyTrait {
+  override def sayHello(name: String): String = s"Hello $name!"
+
+  override val greet = sayHello
+}
+
+/**
  * Function Vs Method
  *
- * def defines a method that needs to be included within a class or object.  It corresponds to a Java method in a class.
+ * def defines a method that needs to be included within a trait, class or object.  It corresponds to a
+ * Java method in a class/interface.
  * val defines a function, which gets compiled to an instance of an [anonymous] class that implements one
  * of the Function0 through Function22 traits. Scala will create 1 anonymous class and instantiate 1 object
  * from the anonymous class per val function, even if the same function expression is used for multiple vals.

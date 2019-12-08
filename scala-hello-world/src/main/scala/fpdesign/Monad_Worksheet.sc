@@ -1,3 +1,4 @@
+import scala.util.Try
 // good resources on Monads (category theory)
 // Brian Beckman: Don't fear the Monad: https://youtu.be/ZhuHCtR3xq8
 // https://nunoalexandre.com/2016/10/13/the-monad-pattern
@@ -6,7 +7,7 @@
 // 1. associative: x @ (y @ z) = (x @ y) @ z
 // 2. there exists a special element S such that: x @ S = S @ x
 // Note that x @ y does NOT need to equal y @ x
-// functions are monoids because they satify the 2 laws above, e.g. f: a -> a
+// functions are monoids because they satisfy the 2 laws above, e.g. f: a -> a
 
 // functions are just like data - think of a function lookup table.
 // Monads (wikipedia: In functional programming, monads are a way to build computer programs by
@@ -30,13 +31,21 @@
  * List monad makes nondeterminism (variable # of elements) explicit in the type system and hides the boilerplate of loops
  * Future monad makes asynchronous computation explicit in the type system and hides the boilerplate of threading logic
  */
-// To qualify as a Monad, a type must satisfy the following monadic laws:  (flatMap, aka bind, is the combining operation)
-// Associativity: (m flatMap f) flatMap g ≡ m flatMap (x => f(x) flatMap g)
-// Left identity/unit: unit(x) flatMap f ≡ f(x)
-// Right identity/unit: m flatMap unit ≡ m
-// In scala, bind is referred to as flatMap.  Every Scala Monhad type must define the following two functions
-trait M[T] {
-  def map[U](f: T => U): M[U] // the unit function is different for each type
+/**
+ * To qualify as a Monad, a type must satisfy the following monadic laws (flatMap == bind, the combining operation):
+ * (x: an instance of data contained in a Monad, aka instance of T
+ *  m: an instance of of a Monad type, aka instance of M[T]
+ *  f: T => M[U]
+ *  g: T => U
+ *  unit: T => M[T])
+ *
+ * 1. Left identity/unit: unit(x) flatMap f ≡ f(x)
+ * 2. Right identity/unit: m flatMap unit ≡ m
+ * 3. Associativity: (m flatMap f) flatMap g ≡ m flatMap { x => f(x) flatMap g }
+ */
+// Every Scala Monad type must define the following two functions
+trait M[T] { // Monad is a type class
+  def map[U](g: T => U): M[U] // the unit function is typically different for each type
   def flatMap[U](f: T => M[U]): M[U] // commonly referred to as "bind"
 }
 
@@ -117,7 +126,13 @@ val someValue =
 
 // Try is not a Monad because the left identity/unit law does not hold.  However Try can still
 // be used in for expressions if it implements map, flatMap, and withFilter because
-// for expressions do not utilize the left unit law.
+// for expressions do not utilize the left unit law: unit(x) flatMap f ≡ f(x)
+// Example:
+lazy val riskyInt = "blah".toInt
+def plusOne(value: Int): Try[Int] = Try(value + 1)
+val tryLeftIdentityTest = Try(riskyInt).flatMap(plusOne) // Failure(java.lang.NumberFormatException)
+// val tryFailTest = plusOne(riskyInt) // throws java.lang.NumberFormatException
+
 //abstract class Try[+T](x: T) {
 //  def map[U](f: T => U): Try[U] = this match {
 //    case Success(x) => Try[U][f(x)]

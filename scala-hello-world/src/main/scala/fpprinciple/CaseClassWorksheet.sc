@@ -9,10 +9,10 @@
  *
  * 4. Easy to use and manipulate:
  * # case class is actually a shorthand which, in addition to defining a class, also
- * [creates a companion object] and adds apply and unapply methods to its companion object.
+ * creates a companion object with a few methods: apply, unapply, copy, etc.
  * We can still define companion object for a case class (in order to define a companion object for a
  * class you have to set the same names for them and declare them in the same file.) and define other methods.
- * # Each arguement in the primary constructor has a corresponding getter generated.
+ * # Each argument in the primary constructor has a corresponding getter generated.
  */
 case class Rectangle(length: Double, width: Double) { // Primary constructor
 

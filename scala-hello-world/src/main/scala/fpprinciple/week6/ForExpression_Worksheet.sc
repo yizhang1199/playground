@@ -117,10 +117,27 @@ val callForFun4Equivalent = forFun4Equivalent(teas, fruits.toList)
 assert(callForFun4 == callForFun4Equivalent)
 
 // for expressions that performs an action but do not yield a value
-for ( x <- 1 to 3 ) println(s"iteration $x")
-
 // Mid-stream assignment in a for expression
 for {
   x <- 1 to 3 // y cannot be used yet as it hasn't be declared
   y = x ^ 3 // val should not be used, expressions after this can use y
-} println(x + "^3 = " + y) // both x and y can be referenced here
+} println(s"$x^3 = $y") // both x and y can be referenced here
+
+/**
+ * Use Applicatives with Disjunctions
+ */
+case class MyError(error: String)
+val error1 = MyError("error1")
+val result1: Either[MyError, Int] = Right(100)
+val result2: Either[MyError, Int] = Left(error1)
+val result3: Either[MyError, Int] = Right(200)
+
+val combinedResult1 = for {
+  r1 <- result1
+  r2 <- result3
+} yield r1 + r2 // Right(100)
+
+val combinedResult2 = for {
+  r1 <- result1
+  r2 <- result2
+} yield r1 + r2 // Left(MyError("error1"))

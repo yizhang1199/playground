@@ -1,6 +1,6 @@
 package fpprinciple.week4
 
-object Test {
+object ListTest {
   def main(args: Array[String]): Unit = {
     val ints: List[Int] = new LinkedList[Int](4, Nil)
     ints.append(5)

@@ -15,6 +15,8 @@ ThisBuild / sbtVersion := "1.3.3"
 ThisBuild / scalaVersion := "2.13.1"
 
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8"
+lazy val slf4sApi = "ch.timo-schmid" %% "slf4s-api" % "1.7.26" //"org.slf4s" %% "slf4s-api" % "1.7.25"
+lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(

@@ -58,7 +58,7 @@ case class AlphabetAddition(addends: List[String], sum: String) {
   }
 
   def solve: Option[Map[Char, Int]] = {
-    allSolutions().collectFirst {
+    allSolutionsUsingCombinationsAndPermutations.collectFirst {
       case solution: Map[Char, Int] if isValid(solution) => solution
     }
   }
@@ -104,19 +104,42 @@ case class AlphabetAddition(addends: List[String], sum: String) {
     }
   }
 
-  @tailrec // TODO brute-force solution that's slow and takes up a lot of memory
+  @tailrec // TODO brute-force solution that generates all possible solutions. Slow and takes up a lot of memory
   final def allSolutions(alphabets: Seq[Char] = distinctAlphabets,
                          solutionsMerged: Seq[Map[Char, Int]] = Seq()): Seq[Map[Char, Int]] = {
     alphabets match {
       case Seq() => solutionsMerged
       case alphabet :: tail =>
-        val next = getAllowedDigits(alphabet).map(digit => Map(alphabet -> digit))
-        val mergedAgain = merge(solutionsMerged, next)
+        val nextSolution = getAllowedDigits(alphabet).map(digit => Map(alphabet -> digit))
+        val mergedAgain = merge(solutionsMerged, nextSolution)
         allSolutions(tail, mergedAgain)
     }
   }
 
   private def isMultiDigit(addend: String) = {
     addend.length > 1
+  }
+
+  // ----------------------------------------
+  // Highlights from community solutions:
+  // ----------------------------------------
+  /**
+   * https://exercism.io/tracks/scala/exercises/alphametics/solutions/ebd5a4042382492093d0093913ab52e0
+   * Same brute force approach but much better use of combinations & permutations to generate all solutions.
+   * Still takes seconds but using the library methods are 2x faster than my solution.  Example:
+   */
+  private def allSolutionsUsingCombinationsAndPermutations: Seq[Map[Char, Int]] = {
+    def zeroRule(numbers: Seq[Int], letters: Seq[Char]): Boolean = {
+      val zeroRuleBroken = (numbers contains 0) &&
+        nonZeroAlphabets.contains(letters(numbers.indexOf(0)))
+      !zeroRuleBroken
+    }
+
+    val combinations = for {
+      numbers <- (0 to 9).combinations(distinctAlphabets.size)
+      letters <- distinctAlphabets.permutations if zeroRule(numbers, letters)
+    } yield (letters zip numbers).toMap
+
+    combinations.toSeq
   }
 }

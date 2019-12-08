@@ -1,6 +1,6 @@
 package fpprinciple.week4
 
-object test {
+object ExprTest {
   def main(args: Array[String]): Unit = {
     def show(e: Expr): String = e match {
       case Num(n) => n.toString()
