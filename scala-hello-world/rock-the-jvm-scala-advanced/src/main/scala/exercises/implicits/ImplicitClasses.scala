@@ -8,7 +8,7 @@ import scala.util.Try
  * code, aka Decorator pattern.
  *
  * An implicit class must be defined in a scope where method definitions are allowed (not at the top level).
- * Type erasure: compiler looks for implicit conversion at compile time, e.g. before types are erased.
+ * Type safety: compiler looks for implicit conversion at compile time, e.g. before types are erased.
  *
  * Best Practices:
  * 1. Keep type enrichment to implicit classes and type classes.
@@ -19,7 +19,7 @@ import scala.util.Try
  * 4. Package implicits clearly, bring into scope what you need and when you need it.
  *
  * Comparisons:
- * 1. Type classes together with context bounds, are used to provide extensions to many existing classes.
+ * 1. Type class pattern is used to provide extensions to many existing classes.
  * 2. Value classes are used to provide better runtime performance by avoiding allocation of the wrapper class.
  *    When possible, always make an implicit class a value class.
  *

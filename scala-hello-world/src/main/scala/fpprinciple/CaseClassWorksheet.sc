@@ -66,3 +66,13 @@ def testPatternMatching(x: Any): Unit = {
 testPatternMatching(x)
 testPatternMatching(y)
 testPatternMatching(123)
+
+/**
+ * https://hello-scala.com/412-case-objects.html
+ *
+ * A case object is like an object, but just like a case class has more features than a regular class, a case object
+ * has more features than a regular object. It specifically has two important features that make it useful:
+ *
+ * It is serializable
+ * It has a default hashCode implementation
+ */
