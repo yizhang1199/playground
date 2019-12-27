@@ -32,7 +32,11 @@ object ImplicitClasses extends App {
 
   /**
    * An implicit class is desugared into a class and implicit method pairing, where the implicit method mimics
-   * the constructor of the class, e.g. "implicit final def RichInt(n: Int): RichInt = new RichInt(n)"
+   * the constructor of the class, example:
+   *
+   * object ImplicitClasses extends App {
+   *   implicit final def MyEnrichedString(s: String): MyEnrichedString = new MyEnrichedString(s)
+   * }
    *
    * Without extending from AnyVal, an instance of the implicit class will always be created every time the
    * implicit conversion happens.  See examples below.
