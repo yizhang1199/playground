@@ -2,8 +2,6 @@ package spark.test
 
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
-import scala.reflect.io.{Directory, File}
-
 object PartitionWithAppendApp extends App {
 
   private val DataPath = "target/partition-append-test"

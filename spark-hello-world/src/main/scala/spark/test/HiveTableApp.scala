@@ -23,7 +23,7 @@ object HiveTableApp extends App {
   things.write
     .mode(SaveMode.Overwrite)
     .partitionBy("color")
-    .bucketBy(2,"age") // Spark created 8 part files!  Why?
+    .bucketBy(2,"age") // Spark will create numBuckets * numCores files, e.g. 8 (2 * 4) in this case
     .saveAsTable("bucketedTable")
     //.parquet(s"$DataPath/partitionByAge_bucketByColor") // fails with 'save' does not support bucketBy right now;
 

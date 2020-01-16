@@ -14,18 +14,27 @@ ThisBuild / version := "0.1"
 ThisBuild / sbtVersion := "1.3.3"
 ThisBuild / scalaVersion := "2.12.8"
 
+val sparkVersion = "2.4.4"
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8"
 lazy val slf4sApi = "ch.timo-schmid" %% "slf4s-api" % "1.7.26" //"org.slf4s" %% "slf4s-api" % "1.7.25"
 lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
-lazy val sparkCore = "org.apache.spark" %% "spark-core" % "2.4.4"
-lazy val sparkSql = "org.apache.spark" %% "spark-sql" % "2.4.4"
+lazy val deltaLakeCore = "io.delta" %% "delta-core" % "0.5.0"
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     scalaTest % Test,
     slf4sApi,
-    sparkCore,
-    sparkSql
+    // spark
+    "org.apache.spark" %% "spark-sql" % sparkVersion,
+    "org.apache.spark" %% "spark-core" % sparkVersion,
+    "org.apache.spark" %% "spark-streaming" % sparkVersion,
+    "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion,
+    "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
+    // commons
+    "commons-validator" % "commons-validator" % "1.6",
+    "javax.mail" % "mail" % "1.4.7",
+    // Databricks
+    deltaLakeCore
   ),
   scalacOptions ++= Seq( // https://docs.scala-lang.org/overviews/compiler-options/index.html
     "-feature",
