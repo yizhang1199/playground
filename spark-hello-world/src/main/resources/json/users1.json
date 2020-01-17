@@ -1,6 +1,11 @@
 {"userId":  1, "login":  "user1", "name":  "Hello Kitty"}
 {"userId":  2, "login":  "user2", "name":  "Mickey"}
 {"userId":  3, "login":  "user3", "name":  "Minie"}
+
+{"userId":  11, "blah": "I'm an invalid entry" }
+
+I'm totally corrupt.
+
 {"userId":  4, "login":  "user4", "name":  "Garfield"}
 {"userId":  5, "login":  "user5", "name":  "Tiger"}
 {"userId":  6, "login":  "user6", "name":  "Epoo"}
