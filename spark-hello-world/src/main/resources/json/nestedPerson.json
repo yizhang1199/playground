@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Big Bird",
+    "address": {
+      "street": "Bulevard",
+      "city": "Helsinki",
+      "country": "Finland"
+    },
+    "children": [
+      {
+        "name": "Little Bird",
+        "age": 5,
+        "birthdate": "2004-09-04"
+      },
+      {
+        "name": "Tiger",
+        "age": 3
+      }
+    ]
+  },
+  {
+    "name": "Garfield",
+    "age": 100,
+    "address": {
+      "street": "abc street",
+      "city": "San Diego"
+    }
+  }
+]

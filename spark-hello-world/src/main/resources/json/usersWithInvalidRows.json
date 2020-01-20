@@ -1,0 +1,5 @@
+{"userId":  1, "login":  "user1", "name":  "Hello Kitty"}
+{"userId":  "malformed-userId", "blah": "I'm an invalid row" }
+{"login":  "missingUserId", "blah":  "This column will be ignored"}
+{"userId":  1, "login":  "user1-duplicate", "name":  "Hello Kitty Duplicate"}
+I'm another corrupt row with no userId.

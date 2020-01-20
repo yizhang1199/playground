@@ -5,10 +5,8 @@ import org.apache.spark.sql.streaming.Trigger
 
 import scala.concurrent.duration._
 
-import StreamingSource.{jsonSourceSchema, jsonSourcePath}
-
-object FileSourceToParquetSinkApp extends App {
-  private val name: String = FileSourceToParquetSinkApp.getClass.getSimpleName
+object KafkaSourceToParquetSinkApp extends App {
+  private val name: String = KafkaSourceToParquetSinkApp.getClass.getSimpleName
   private val numberOfCores: Int = 2
 
   val spark = SparkSession.builder()
@@ -18,36 +16,28 @@ object FileSourceToParquetSinkApp extends App {
   spark.conf.set("spark.sql.shuffle.partitions", s"$numberOfCores")
 
   /**
-   * Updates to existing files will NOT be detected.
-   * New files added to the directory will be picked up - a new parquet file will be created, even with duplicate rows,
-   * e.g. both the old and new parquet files may have a row with the same id and potentially different data.
+   * Kafka source has a fixed schema and cannot be set with a custom one:
    *
-   * Malformed rows will be stored in the "CorruptRecord" column.
-   * Rows with any valid columns will be preserved
-   * Rows with duplicate IDs will be preserved
-   *
-   * userId = 1
-   * login = user1
-   * name = Hello Kitty
-   *
-   * CorruptRecord = {"userId":  "malformed-userId", "blah": "I'm an invalid row" }
-   *
-   * login = missingUserId
-   *
-   * userId = 1
-   * login = user1-duplicate
-   * name = Hello Kitty Duplicate
-   *
-   * CorruptRecord = I'm another corrupt row with no userId.
+   * root
+   * |-- key: binary (nullable = true)
+   * |-- value: binary (nullable = true)
+   * |-- topic: string (nullable = true)
+   * |-- partition: integer (nullable = true)
+   * |-- offset: long (nullable = true)
+   * |-- timestamp: timestamp (nullable = true)
+   * |-- timestampType: integer (nullable = true)
    */
   val streamingDF = spark
     .readStream
-    .option("maxFilesPerTrigger", 2)
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", "MyTopic")
     .option("mode", "PERMISSIVE")
     .option("columnNameOfCorruptRecord", "CorruptRecord")
-    .schema(jsonSourceSchema) // Required for file streaming DataFrames
-    .json(jsonSourcePath) // The stream's source directory and file type
+    .load()
+      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
+  println("====================================")
   streamingDF.printSchema()
 
   val sinkPath = StreamingSink.sinkPath(name, "parquet") // A subdirectory for our output
@@ -58,7 +48,7 @@ object FileSourceToParquetSinkApp extends App {
     .queryName(name)
     .trigger(Trigger.ProcessingTime(1.seconds))
     //.trigger(Trigger.Continuous(1.second)) // java.lang.IllegalStateException: Unknown type of trigger: ContinuousTrigger(1000)
-    .format("parquet") // Specify the sink type, a Parquet file
+    .format("parquet")
     .option("checkpointLocation", checkpointPath) // Specify the location of checkpoint files & W-A logs
     .outputMode("append") // Write only new data to the "file"
     .start(sinkPath) // Start the job, writing to the specified directory

@@ -12,38 +12,76 @@
  */
 ThisBuild / version := "0.1"
 ThisBuild / sbtVersion := "1.3.3"
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := "2.11.12" // "2.12.8"
 
-val sparkVersion = "2.4.4"
-lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8"
-lazy val slf4sApi = "ch.timo-schmid" %% "slf4s-api" % "1.7.26" //"org.slf4s" %% "slf4s-api" % "1.7.25"
-lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
-lazy val deltaLakeCore = "io.delta" %% "delta-core" % "0.5.0"
+lazy val sparkVersion = "2.4.4"
+lazy val deltaLakeVersion = "0.5.0"
+
+// The following are added due to jar conflicts with spark
+lazy val json4sVersion = "3.5.3" // Spark 2.4.4 uses json4s 3.5.3. Other versions will cause compilation problems.
+lazy val jacksonVersion = "2.6.7" // spark 2.4.4 uses jackson 2.6.7
+lazy val jacksonDatabindVersion = "2.6.7.3"
+//lazy val scalaXmlVersion = "1.2.0"
+
+//lazy val kafkaStreamsVersion = "2.4.0"
+
+lazy val scalaLoggingVersion = "3.9.2"
+lazy val logbackVersion = "1.2.3"
+
+// http://www.scalactic.org/
+lazy val scalacticVersion = "3.1.0"
+
+// testing jar versions
+lazy val scalaTestVersion = "3.1.0"
+lazy val mockitoScalaVersion = "1.10.5"
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
-    scalaTest % Test,
-    slf4sApi,
-    // spark
-    "org.apache.spark" %% "spark-sql" % sparkVersion,
+    // commons
+    "org.scalactic" %% "scalactic" % scalacticVersion,
+    //"commons-validator" % "commons-validator" % "1.6",
+    //"javax.mail" % "mail" % "1.4.7",
+
+    // spark & databricks
     "org.apache.spark" %% "spark-core" % sparkVersion,
+    "org.apache.spark" %% "spark-sql" % sparkVersion,
+    "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
     "org.apache.spark" %% "spark-streaming" % sparkVersion,
     "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion,
-    "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
-    // commons
-    "commons-validator" % "commons-validator" % "1.6",
-    "javax.mail" % "mail" % "1.4.7",
-    // Databricks
-    deltaLakeCore
+    "io.delta" %% "delta-core" % deltaLakeVersion,
+
+    // kafka
+    //"org.apache.kafka" %% "kafka-streams-scala" % kafkaStreamsVersion,
+
+    // logging
+    "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+    "ch.qos.logback" % "logback-classic" % logbackVersion,
+
+    // testing
+    "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+    "org.mockito" %% "mockito-scala" % mockitoScalaVersion % Test
   ),
   scalacOptions ++= Seq( // https://docs.scala-lang.org/overviews/compiler-options/index.html
     "-feature",
     "-deprecation",
     "-unchecked",
     "-encoding", "utf8", // Option and arguments on same line
-    "-Xfatal-warnings",  // New lines for each options
-    "-opt:unreachable-code,simplify-jumps"
-  )
+    "-Xfatal-warnings" // New lines for each options
+    //"-opt:unreachable-code,simplify-jumps" // not supported by scala 2.11
+  ),
+  dependencyOverrides ++= {
+    Seq(
+      // Pin these to versions required by Spark to avoid java.lang.NoSuchMethodError or Incompatible version errors
+      // Fixes "Incompatible Jackson version: 2.10.0" (https://issues.apache.org/jira/browse/SPARK-24601)
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+      "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+      "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
+      //"org.json4s" %% "json4s-native" % json4sVersion,
+      //"org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
+      "org.json4s" %% "json4s-core" % json4sVersion,
+      "org.json4s" %% "json4s-jackson" % json4sVersion
+    )
+  }
 )
 
 lazy val `spark-hello-world` = sbt.project

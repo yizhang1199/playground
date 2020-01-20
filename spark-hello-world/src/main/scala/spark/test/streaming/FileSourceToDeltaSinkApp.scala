@@ -10,11 +10,11 @@ import scala.concurrent.duration._
  * https://docs.databricks.com/delta/delta-streaming.html
  */
 object FileSourceToDeltaSinkApp extends App {
-  private val name: String = FileSourceToParquetSinkApp.getClass.getSimpleName
+  private val name: String = FileSourceToDeltaSinkApp.getClass.getSimpleName
   private val numberOfCores: Int = 2
 
   val spark = SparkSession.builder()
-    .appName("FileSourceToParquetSinkApp")
+    .appName(name)
     .master(s"local[$numberOfCores]")
     .getOrCreate()
   spark.conf.set("spark.sql.shuffle.partitions", s"$numberOfCores")
@@ -35,18 +35,18 @@ object FileSourceToDeltaSinkApp extends App {
     .save(sinkPath)
 
   val streamingDF = spark
-    .readStream // Returns DataStreamReader
+    .readStream
     .option("mode", "PERMISSIVE")
-    .option("columnNameOfCorruptRecord", "BadRecord")
+    .option("columnNameOfCorruptRecord", "CorruptRecord")
     .option("maxFilesPerTrigger", 1) // Force processing of only 1 file per trigger
     .schema(jsonSourceSchema) // Required for all streaming DataFrames
     .json(jsonSourcePath) // The stream's source directory and file type
 
   streamingDF.printSchema()
 
-  val streamingQuery = streamingDF                     // Start with our "streaming" DataFrame
-    .writeStream                                       // Get the DataStreamWriter
-    .queryName(s"$name-1s")                // Name the query
+  val streamingQuery = streamingDF
+    .writeStream
+    .queryName(name)
     .trigger(Trigger.ProcessingTime(1.seconds))        // Configure for a 1-second micro-batch
     //.trigger(Trigger.Continuous(1.second)) // java.lang.IllegalStateException: Unknown type of trigger: ContinuousTrigger(1000)
     .format("delta")                        // Specify the sink type, a Parquet file

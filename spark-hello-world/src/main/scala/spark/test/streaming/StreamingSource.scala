@@ -12,7 +12,8 @@ object StreamingSource {
     List(
       StructField("userId", IntegerType, nullable = false),
       StructField("login", StringType, nullable = false),
-      StructField("name", StringType, nullable = false)
+      StructField("name", StringType, nullable = false),
+      StructField("CorruptRecord", StringType, nullable = true)
     )
   )
 
