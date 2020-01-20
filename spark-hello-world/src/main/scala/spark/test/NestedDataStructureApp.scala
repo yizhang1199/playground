@@ -49,7 +49,7 @@ object NestedDataStructureApp extends App {
 //  spark.conf.set("spark.executor.userClassPathFirst", "true")
 //  spark.conf.set("spark.driver.userClassPathFirst", "true")
 
-  val nestedJsonDF = readNestedJson("nestedPerson.json")
+  val nestedJsonDF = readNestedJson("personsMultiLine.json")
 
   /**
    * root

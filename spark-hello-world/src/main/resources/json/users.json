@@ -1,0 +1,5 @@
+{"userId":  1, "login":  "user1", "name":  {"first": "Hello", "last":  "Kitty"}}
+{"userId":  2, "login":  "user2", "name":  {"first": "Mickey", "last":  "Mouse"}}
+{"userId":  3, "login":  "user3", "name":  {"first": "Minie", "last":  "Mouse"}}
+{"userId":  4, "login":  "user4", "name":  {"first": "Garfield"}}
+{"userId":  5, "login":  "user5"}

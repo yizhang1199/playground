@@ -1,10 +1,19 @@
 package spark.test.streaming
 
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
+import org.apache.spark.sql.types.StringType
 
 import scala.concurrent.duration._
 
+/**
+ * How to deserialize keys and values from Kafka streams: when using Spark, keys and values are always deserialized
+ * as byte arrays with ByteArrayDeserializer. Use DataFrame operations to explicitly deserialize the values.
+ *
+ * https://docs.databricks.com/spark/latest/structured-streaming/kafka.html
+ * https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html
+ */
 object KafkaSourceToParquetSinkApp extends App {
   private val name: String = KafkaSourceToParquetSinkApp.getClass.getSimpleName
   private val numberOfCores: Int = 2
@@ -14,6 +23,12 @@ object KafkaSourceToParquetSinkApp extends App {
     .master(s"local[$numberOfCores]")
     .getOrCreate()
   spark.conf.set("spark.sql.shuffle.partitions", s"$numberOfCores")
+
+  import spark.implicits._
+
+  val jsonOptions = Map(
+    "mode" -> "PERMISSIVE",
+    "columnNameOfCorruptRecord" -> "CorruptRecord")
 
   /**
    * Kafka source has a fixed schema and cannot be set with a custom one:
@@ -32,11 +47,22 @@ object KafkaSourceToParquetSinkApp extends App {
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("subscribe", "MyTopic")
-    .option("mode", "PERMISSIVE")
-    .option("columnNameOfCorruptRecord", "CorruptRecord")
     .load()
-      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+    .select($"value".cast(StringType))
+    .select(from_json($"value", StreamingSource.jsonSourceSchema, jsonOptions).as("data"))
+    .select("data.*", "*")
+    .drop("data")
 
+  /**
+   * root
+   * |-- data: struct (nullable = true)
+   * |    |-- userId: integer (nullable = true)
+   * |    |-- login: string (nullable = true)
+   * |    |-- name: struct (nullable = true)
+   * |    |    |-- first: string (nullable = true)
+   * |    |    |-- last: string (nullable = true)
+   * |    |-- CorruptRecord: string (nullable = true)
+   */
   println("====================================")
   streamingDF.printSchema()
 
