@@ -1,18 +1,16 @@
 package spark.test
 
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.SaveMode
 
 import scala.reflect.io.{Directory, File}
 
 object PartitionApp extends App {
 
+  val name = PartitionApp.getClass.getSimpleName
+  val spark = SparkHelper.initSpark(name)
+
   private val DataPath = "target/partition-test"
   Directory(File(DataPath)).deleteRecursively()
-
-  val spark = SparkSession.builder()
-    .appName("RangePartitionApp")
-    .master("local[4]")
-    .getOrCreate()
 
   import spark.implicits._
 

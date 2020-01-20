@@ -1,21 +1,10 @@
 package spark.test
 
-import org.apache.spark.sql.{SaveMode, SparkSession}
-
-import scala.reflect.io.{Directory, File}
+import org.apache.spark.sql.SaveMode
 
 object HiveTableApp extends App {
-
-  // warehouseLocation points to the default location for managed databases and tables
-  private val warehouseLocation = "target/spark-warehouse"
-  Directory(File(warehouseLocation)).deleteRecursively()
-
-  val spark = SparkSession.builder()
-    .config("spark.sql.warehouse.dir", warehouseLocation)
-    .appName("RangePartitionApp")
-    .master("local[4]")
-    //.enableHiveSupport()
-    .getOrCreate()
+  val name = HiveTableApp.getClass.getSimpleName
+  val spark = SparkHelper.initSpark(name)
 
   val things = Things.setup(spark)
 

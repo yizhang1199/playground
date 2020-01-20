@@ -1,5 +1,6 @@
 package com.sundogsoftware.spark
 
+import java.net.URL
 import java.nio.charset.{Charset, CodingErrorAction}
 
 import org.apache.spark.sql.{Row, SparkSession}
@@ -29,8 +30,9 @@ object PopularMovies {
      * 305	451	3	886324817
      * 6	86	3	883603013
      */
-    val df = sparkSession.read
-      .text(this.getClass.getClassLoader.getResource("ml-100k/u.data").getFile)
+
+    println("===getResource=" + getResource("ml-100k/u.data"))
+    val df = sparkSession.read.text(getResource("ml-100k/u.data").getFile)
 
     import sparkSession.implicits._
 
@@ -55,16 +57,26 @@ object PopularMovies {
   }
 
   private val MovieNameRegex = """\s*(\d+)\|([^|]+).*""".r
+
   private def loadMovieNames: Map[Int, String] = {
-    implicit val codec = Codec(Charset forName "UTF-8")
+    implicit val codec: Codec = Codec(Charset forName "UTF-8")
     codec.onMalformedInput(CodingErrorAction.REPLACE)
     codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
 
-    val lines = Source.fromResource("ml-100k/u.item").getLines()
+    //val lines = Source.fromResource("ml-100k/u.item").getLines() // not available on scala 2.11
+    val source = Source.fromURL(getResource("ml-100k/u.item"))
+    try {
+      val lines = source.getLines()
+      lines.collect {
+        case MovieNameRegex(movieId, movieName) =>
+          movieId.toInt -> movieName
+      }.toMap
+    } finally {
+      source.close()
+    }
+  }
 
-    lines.collect {
-      case MovieNameRegex(movieId, movieName) =>
-        movieId.toInt -> movieName
-    }.toMap
+  private def getResource(filename: String): URL = {
+    this.getClass.getClassLoader.getResource(filename)
   }
 }

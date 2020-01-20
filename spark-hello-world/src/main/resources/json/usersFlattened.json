@@ -1,0 +1,11 @@
+{"userId":  1, "login":  "user1", "name_first":  "Hello", "name_last":  "Kitty"}
+{"userId":  2, "login":  "user2", "name_first":  "Mickey", "name_last":  "Mouse"}
+{"userId":  3, "login":  "user3", "name_first":  "Minie", "name_last":  "Mouse"}
+{"userId":  4, "login":  "user4", "name_first":  "Garfield"}
+{"userId":  5, "login":  "user5"}
+
+
+{"userId":  5, "login":  "user5", "name_first":  "Tiger"}
+I'm also malformed
+{"userId":  "666", "login":  "user666"}
+{"userId":  6, "login":  "user6", "name_first":  "Big Bird"}

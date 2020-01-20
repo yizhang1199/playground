@@ -35,21 +35,12 @@ import scala.reflect.io.{Directory, File}
  * https://issues.apache.org/jira/browse/SPARK-4502
  * https://issues.apache.org/jira/browse/SPARK-25556 (Predicate Pushdown for Nested fields)
  */
-object NestedDataStructureApp extends App {
-  private val name: String = NestedDataStructureApp.getClass.getSimpleName
-  private val numberOfCores: Int = 2
+object NestedFieldsApp extends App {
+  private val name: String = NestedFieldsApp.getClass.getSimpleName
 
-  val spark = SparkSession.builder()
-    .appName(name)
-    .master(s"local[$numberOfCores]")
-    .getOrCreate()
-  spark.conf.set("spark.sql.shuffle.partitions", s"$numberOfCores")
-  // java.lang.NoSuchMethodError: com.google.common.base.Stopwatch.elapsedMillis()J
-  // https://github.com/googleapis/google-cloud-java/issues/4414  TODO is this the right way?
-//  spark.conf.set("spark.executor.userClassPathFirst", "true")
-//  spark.conf.set("spark.driver.userClassPathFirst", "true")
+  implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
-  val nestedJsonDF = readNestedJson("personsMultiLine.json")
+  val nestedJsonDF = SparkHelper.readJson(filename = "personsMultiLine.json", multiLine = true)
 
   /**
    * root
@@ -77,21 +68,6 @@ object NestedDataStructureApp extends App {
   //----------------------------------------------------------
   // Helper methods
   //----------------------------------------------------------
-  private def readNestedJson(filename: String): DataFrame = {
-    val nestedJsonDF = spark
-      .read
-      .option("allowComments", "true")
-      .option("allowNumericLeadingZeros", "true")
-      .option("mode", "PERMISSIVE")
-      .option("columnNameOfCorruptRecord", "CorruptRecord")
-      .option("multiLine", "true")
-      .option("dateFormat", "yyyy-MM-dd")
-      //.schema(personSchema)
-      .json(this.getClass.getClassLoader.getResource(s"json/$filename").getFile)
-
-    nestedJsonDF
-  }
-
   private def writeNestedJsonToParque(nestedJsonDF: DataFrame): String = {
     val parquetPath = s"target/$name/parquet"
     val dir = Directory(File(parquetPath))

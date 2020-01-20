@@ -3,7 +3,8 @@ package spark.test.streaming
 import io.delta.tables.DeltaTable
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.apache.spark.sql.streaming.Trigger
-import spark.test.streaming.StreamingSource.{jsonSourcePath, jsonSourceSchema}
+import spark.test.streaming.StreamingSource.jsonSourcePath
+import spark.test.SparkHelper
 
 import scala.concurrent.duration._
 /**
@@ -11,23 +12,12 @@ import scala.concurrent.duration._
  */
 object FileSourceToDeltaSinkApp extends App {
   private val name: String = FileSourceToDeltaSinkApp.getClass.getSimpleName
-  private val numberOfCores: Int = 2
-
-  val spark = SparkSession.builder()
-    .appName(name)
-    .master(s"local[$numberOfCores]")
-    .getOrCreate()
-  spark.conf.set("spark.sql.shuffle.partitions", s"$numberOfCores")
-
-  import spark.implicits._
+  implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
   val sinkPath = StreamingSink.sinkPath(name, "delta") // A subdirectory for our output
   val checkpointPath = StreamingSink.checkpointPath(name) // A subdirectory for our checkpoint & W-A logs
 
-  val initialUsersDf = Seq(
-    (0, "user0", "007")
-  ).toDF("userId", "login", "name")
-
+  val initialUsersDf = SparkHelper.readJson(filename = "userInit.json")
   initialUsersDf  // create the delta table path otherwise streaming fails with "..." is not a Delta table
     .write
     .format("delta")
@@ -36,11 +26,10 @@ object FileSourceToDeltaSinkApp extends App {
 
   val streamingDF = spark
     .readStream
-    .option("mode", "PERMISSIVE")
-    .option("columnNameOfCorruptRecord", "CorruptRecord")
-    .option("maxFilesPerTrigger", 1) // Force processing of only 1 file per trigger
-    .schema(jsonSourceSchema) // Required for all streaming DataFrames
-    .json(jsonSourcePath) // The stream's source directory and file type
+    .option("maxFilesPerTrigger", 1)
+    .options(SparkHelper.corruptRecordOptions)
+    .schema(SparkHelper.userSchema)
+    .json(jsonSourcePath)
 
   streamingDF.printSchema()
 

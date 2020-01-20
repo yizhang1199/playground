@@ -1,20 +1,12 @@
 package spark.test
 
-import org.apache.spark.sql.{AnalysisException, SparkSession}
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.Row
-import org.apache.spark.SparkException
 
 object SparkTestApp extends App {
 
-  val spark = SparkSession.builder()
-    .appName("RangePartitionApp")
-    .master("local[4]")
-    .getOrCreate()
-
-  import spark.implicits._
-
+  val name = SparkTestApp.getClass.getSimpleName
+  val spark = SparkHelper.initSpark(name)
 
   def createSchema() = {
     var schema = new StructType()

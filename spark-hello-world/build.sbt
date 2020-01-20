@@ -13,16 +13,17 @@ import sbt.Keys.dependencyOverrides
  */
 ThisBuild / version := "0.1"
 ThisBuild / sbtVersion := "1.3.7"
-ThisBuild / scalaVersion := "2.11.12" // "2.12.8"
+ThisBuild / scalaVersion := "2.12.8" // "2.12.8" "2.11.12"
 
 lazy val sparkVersion = "2.4.4"
 lazy val deltaLakeVersion = "0.5.0"
 
 // The following are added due to jar conflicts with spark
-lazy val json4sVersion = "3.5.3" // Spark 2.4.4 uses json4s 3.5.3. Other versions will cause compilation problems.
-lazy val jacksonVersion = "2.6.7" // spark 2.4.4 uses jackson 2.6.7
-lazy val jacksonDatabindVersion = "2.6.7.3"
+lazy val json4sVersion = "3.5.5" // Spark 2.4.4 uses json4s 3.5.3. Other versions will cause compilation problems.
+//lazy val jacksonVersion = "2.6.7" // spark 2.4.4 uses jackson 2.6.7
+//lazy val jacksonDatabindVersion = "2.6.7.3"
 //lazy val scalaXmlVersion = "1.2.0"
+lazy val guavaVersion = "14.0.1"
 
 //lazy val kafkaStreamsVersion = "2.4.0"
 
@@ -54,6 +55,8 @@ lazy val commonSettings = Seq(
     // kafka
     //"org.apache.kafka" %% "kafka-streams-scala" % kafkaStreamsVersion,
 
+    "com.google.guava" % "guava" % guavaVersion,
+
     // logging
     "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
     "ch.qos.logback" % "logback-classic" % logbackVersion,
@@ -68,7 +71,7 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-encoding", "utf8", // Option and arguments on same line
     "-Xfatal-warnings" // New lines for each options
-    //"-opt:unreachable-code,simplify-jumps" // not supported by scala 2.11
+    //"-opt:unreachable-code,simplify-jumps" // not supported on scala 2.11
   ),
   dependencyOverrides ++= {
     Seq(
@@ -80,7 +83,8 @@ lazy val commonSettings = Seq(
       "org.json4s" %% "json4s-ast" % json4sVersion,
       "org.json4s" %% "json4s-core" % json4sVersion,
       "org.json4s" %% "json4s-jackson" % json4sVersion,
-      "org.json4s" %% "json4s-scalap" % json4sVersion
+      "org.json4s" %% "json4s-scalap" % json4sVersion,
+      "com.google.guava" % "guava" % guavaVersion
     )
   }
 )
