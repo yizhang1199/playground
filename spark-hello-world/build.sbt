@@ -55,8 +55,6 @@ lazy val commonSettings = Seq(
     // kafka
     //"org.apache.kafka" %% "kafka-streams-scala" % kafkaStreamsVersion,
 
-    "com.google.guava" % "guava" % guavaVersion,
-
     // logging
     "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
     "ch.qos.logback" % "logback-classic" % logbackVersion,
