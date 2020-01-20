@@ -26,19 +26,20 @@ object FileSourceToParquetSinkApp extends App {
    * Rows with any valid columns will be preserved
    * Rows with duplicate IDs will be preserved
    *
-   * userId = 1
-   * login = user1
-   * name = Hello Kitty
-   *
-   * CorruptRecord = {"userId":  "malformed-userId", "blah": "I'm an invalid row" }
-   *
-   * login = missingUserId
-   *
-   * userId = 1
-   * login = user1-duplicate
-   * name = Hello Kitty Duplicate
-   *
-   * CorruptRecord = I'm another corrupt row with no userId.
+   * scala> val usersDf = spark.read.parquet("<sinkPath>")
+   * scala> usersDf.createOrReplaceTempView("users")
+   * scala> spark.sql("select * from users").show(20, false)
+   * +------+---------------+---------------------+--------------------------------------------------------------+
+   * |userId|login          |name                 |CorruptRecord                                                 |
+   * +------+---------------+---------------------+--------------------------------------------------------------+
+   * |1     |user1          |Hello Kitty          |null                                                          |
+   * |2     |user2          |Mickey               |null                                                          |
+   * |3     |user3          |Minie                |null                                                          |
+   * |null  |null           |null                 |{"userId":  "malformed-userId", "blah": "I'm an invalid row" }|
+   * |null  |missingUserId  |null                 |null                                                          |
+   * |1     |user1-duplicate|Hello Kitty Duplicate|null                                                          |
+   * |null  |null           |null                 |I'm another corrupt row with no userId.                       |
+   * +------+---------------+---------------------+--------------------------------------------------------------+
    */
   val streamingDF = spark
     .readStream

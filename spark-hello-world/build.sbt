@@ -1,3 +1,4 @@
+import sbt.Keys.dependencyOverrides
 
 /**
  * SBT keys are always scoped by the following 3 axes, with default for each axis.
@@ -11,7 +12,7 @@
  * used keys such as version, scalaVersion, and organization.
  */
 ThisBuild / version := "0.1"
-ThisBuild / sbtVersion := "1.3.3"
+ThisBuild / sbtVersion := "1.3.7"
 ThisBuild / scalaVersion := "2.11.12" // "2.12.8"
 
 lazy val sparkVersion = "2.4.4"
@@ -72,14 +73,14 @@ lazy val commonSettings = Seq(
   dependencyOverrides ++= {
     Seq(
       // Pin these to versions required by Spark to avoid java.lang.NoSuchMethodError or Incompatible version errors
-      // Fixes "Incompatible Jackson version: 2.10.0" (https://issues.apache.org/jira/browse/SPARK-24601)
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
-      "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-      "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
-      //"org.json4s" %% "json4s-native" % json4sVersion,
-      //"org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
+//      "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+//      "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+//      "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
+      "org.json4s" %% "json4s-native" % json4sVersion,
+      "org.json4s" %% "json4s-ast" % json4sVersion,
       "org.json4s" %% "json4s-core" % json4sVersion,
-      "org.json4s" %% "json4s-jackson" % json4sVersion
+      "org.json4s" %% "json4s-jackson" % json4sVersion,
+      "org.json4s" %% "json4s-scalap" % json4sVersion
     )
   }
 )
