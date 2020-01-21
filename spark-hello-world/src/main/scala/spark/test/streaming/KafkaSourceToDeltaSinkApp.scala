@@ -4,9 +4,9 @@ import io.delta.tables.DeltaTable
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.StringType
 import spark.test.SparkHelper
-import spark.test.SparkHelper.corruptRecordOptions
+import spark.test.SparkHelper.{corruptRecordOptions, flattenedUserSchema}
 
 import scala.concurrent.duration._
 
@@ -43,17 +43,65 @@ import scala.concurrent.duration._
  * Please refer to https://docs.delta.io/latest/delta/delta-update.html#upsert-into-a-table-using-merge
  * at org.apache.spark.sql.delta.DeltaErrors$.multipleSourceRowMatchingTargetRowInMergeException(DeltaErrors.scala:451)
  *
+ * Output from reading the delta tables:
+ * # Step 1: start KafkaSourceToDeltaSinkApp and add user0 as seed data
+ * 14:35:37.917 [main] INFO org.apache.spark.sql.catalyst.expressions.codegen.CodeGenerator - Code generated in 4.740655 ms
+ * +------+-----+----------+---------+
+ * |userId|login|name_first|name_last|
+ * +------+-----+----------+---------+
+ * |0     |user0|007       |Bond     |
+ * +------+-----+----------+---------+
+ *
+ * # Step 2: add wellformed users1-5
+ * [20-01-20 14:37:18] /Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/streaming-sinks/KafkaSourceToDeltaSinkApp$/output.delta % ls -l
+ * total 32
+ * drwxr-xr-x  5 yzhang  CORP\Domain Users   160 Jan 20 14:36 _delta_log
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1101 Jan 20 14:35 part-00000-8655c425-5048-40e3-b8ae-19dfebe44a8f-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users   529 Jan 20 14:35 part-00000-a13cde32-0b22-4659-8216-feafb91d1e5b-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1123 Jan 20 14:36 part-00000-d4483623-4cc6-4193-ac10-f790b47b0d11-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1077 Jan 20 14:36 part-00001-e9f00cf0-97e9-4970-87fc-caec1836d0be-c000.snappy.parquet
+ *
+ * 14:37:56.074 [main] INFO org.apache.spark.sql.catalyst.expressions.codegen.CodeGenerator - Code generated in 4.093985 ms
+ * +------+-----+----------+---------+
+ * |userId|login|name_first|name_last|
+ * +------+-----+----------+---------+
+ * |0     |user0|007       |Bond     |
+ * |1     |user1|Hello     |Kitty    |
+ * |2     |user2|Mickey    |Mouse    |
+ * |3     |user3|Minie     |Mouse    |
+ * |4     |user4|Garfield  |null     |
+ * |5     |user5|null      |null     |
+ * +------+-----+----------+---------+
+ *
+ * # Step 3: add/update users with 2 malformed rows
+ * [20-01-20 14:40:15] /Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/streaming-sinks/KafkaSourceToDeltaSinkApp$/output.delta % ls -l
+ * total 48
+ * drwxr-xr-x  6 yzhang  CORP\Domain Users   192 Jan 20 14:39 _delta_log
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1101 Jan 20 14:35 part-00000-8655c425-5048-40e3-b8ae-19dfebe44a8f-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users   529 Jan 20 14:35 part-00000-a13cde32-0b22-4659-8216-feafb91d1e5b-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1123 Jan 20 14:36 part-00000-d4483623-4cc6-4193-ac10-f790b47b0d11-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1154 Jan 20 14:39 part-00000-fe864f3b-aa5e-450e-b417-10f2149449ef-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1092 Jan 20 14:39 part-00001-dddca5a8-8cde-43c4-b2f9-5892bb6aa575-c000.snappy.parquet
+ * -rw-r--r--  1 yzhang  CORP\Domain Users  1077 Jan 20 14:36 part-00001-e9f00cf0-97e9-4970-87fc-caec1836d0be-c000.snappy.parquet
+ *
+ * 14:41:02.705 [main] INFO org.apache.spark.sql.catalyst.expressions.codegen.CodeGenerator - Code generated in 4.2893 ms
+ * +------+-----+----------------+---------+
+ * |userId|login|name_first      |name_last|
+ * +------+-----+----------------+---------+
+ * |null  |null |null            |null     |
+ * |null  |null |null            |null     |
+ * |0     |user0|007             |Bond     |
+ * |1     |user1|Hello           |Kitty    |
+ * |2     |user2|Mickey          |Mouse    |
+ * |3     |user3|Minie           |Mouse    |
+ * |4     |user4|Garfield Updated|null     |
+ * |5     |user5|Tiger           |null     |
+ * |6     |user6|Big Bird        |null     |
+ * +------+-----+----------------+---------+
+ *
  */
 object KafkaSourceToDeltaSinkApp extends App {
   private val name: String = KafkaSourceToDeltaSinkApp.getClass.getSimpleName
-  private val flattenedUserSchema: StructType = StructType(
-    List(
-      StructField("userId", IntegerType, nullable = false),
-      StructField("login", StringType, nullable = false),
-      StructField("name_first", StringType, nullable = false),
-      StructField("name_last", StringType, nullable = false)
-    )
-  )
 
   implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
@@ -63,6 +111,7 @@ object KafkaSourceToDeltaSinkApp extends App {
   val checkpointPath = StreamingSink.checkpointPath(name) // A subdirectory for our checkpoint & W-A logs
 
   // create the delta table path otherwise streaming fails with "..." is not a Delta table
+  // TODO what do we do in PROD with live streams?
   val initialUsersDf = SparkHelper.readJson(filename = "userInit.json")
       .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
 
@@ -85,7 +134,6 @@ object KafkaSourceToDeltaSinkApp extends App {
     .load()
     .select($"value".cast(StringType))
     .select(from_json($"value", flattenedUserSchema, corruptRecordOptions).as("data"))
-    //.select(to_json($"data", jsonOptions).as("json"))
     .select("data.*", "*") // TODO is this the best way to explode a StructType column?
     .drop("data")
 
@@ -116,8 +164,6 @@ object KafkaSourceToDeltaSinkApp extends App {
   def upsert(microBatchDF: DataFrame, batchId: Long): Unit = {
     // https://docs.databricks.com/delta/delta-update.html#upsert-into-a-table-using-merge
     // API doc: https://docs.delta.io/0.5.0/api/scala/io/delta/tables/index.html
-    microBatchDF.createOrReplaceTempView("updates")
-
     DeltaTable.forPath(spark, sinkPath)
       .as("events")
       .merge(

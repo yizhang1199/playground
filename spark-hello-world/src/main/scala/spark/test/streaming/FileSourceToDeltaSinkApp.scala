@@ -14,11 +14,15 @@ object FileSourceToDeltaSinkApp extends App {
   private val name: String = FileSourceToDeltaSinkApp.getClass.getSimpleName
   implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
+  import spark.implicits._
+
   val sinkPath = StreamingSink.sinkPath(name, "delta") // A subdirectory for our output
   val checkpointPath = StreamingSink.checkpointPath(name) // A subdirectory for our checkpoint & W-A logs
 
+  // TODO what do we do in PROD with live streams?
+  // create the delta table path otherwise streaming fails with "..." is not a Delta table
   val initialUsersDf = SparkHelper.readJson(filename = "userInit.json")
-  initialUsersDf  // create the delta table path otherwise streaming fails with "..." is not a Delta table
+    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
     .write
     .format("delta")
     .mode(SaveMode.Overwrite)
@@ -33,28 +37,21 @@ object FileSourceToDeltaSinkApp extends App {
 
   streamingDF.printSchema()
 
-  val streamingQuery = streamingDF
+  streamingDF
+    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
     .writeStream
     .queryName(name)
-    .trigger(Trigger.ProcessingTime(1.seconds))        // Configure for a 1-second micro-batch
+    .trigger(Trigger.ProcessingTime(1.seconds))
     //.trigger(Trigger.Continuous(1.second)) // java.lang.IllegalStateException: Unknown type of trigger: ContinuousTrigger(1000)
-    .format("delta")                        // Specify the sink type, a Parquet file
-    .option("checkpointLocation", checkpointPath)      // Specify the location of checkpoint files & W-A logs
+    .format("delta")
+    .option("checkpointLocation", checkpointPath) // Specify the location of checkpoint files & W-A logs
     .foreachBatch(upsert _)
     .start()
     .awaitTermination
 
   def upsert(microBatchDF: DataFrame, batchId: Long): Unit = {
-    // available since databricks 5.5:
-    microBatchDF.createOrReplaceTempView("updates")
-    //    microBatchDF.sparkSession.sql(s"""
-    //    MERGE INTO events t
-    //    USING updates s
-    //    ON s.userId = t.userId
-    //    WHEN MATCHED THEN UPDATE SET *
-    //    WHEN NOT MATCHED THEN INSERT *
-    //  """)
-
+    // https://docs.databricks.com/delta/delta-update.html#upsert-into-a-table-using-merge
+    // API doc: https://docs.delta.io/0.5.0/api/scala/io/delta/tables/index.html
     DeltaTable.forPath(spark, sinkPath)
       .as("events")
       .merge(
@@ -64,13 +61,15 @@ object FileSourceToDeltaSinkApp extends App {
       .updateExpr(
         Map(
           "login" -> "updates.login",
-          "name" -> "updates.name"))
+          "name_first" -> "updates.name_first",
+          "name_last" -> "updates.name_last"))
       .whenNotMatched
       .insertExpr(
         Map(
           "userId" -> "updates.userId",
           "login" -> "updates.login",
-          "name" -> "updates.name"))
+          "name_first" -> "updates.name_first",
+          "name_last" -> "updates.name_last"))
       .execute()
   }
 }

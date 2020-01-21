@@ -47,6 +47,15 @@ object SparkHelper {
     jsonDf
   }
 
+  val flattenedUserSchema: StructType = StructType(
+    List(
+      StructField("userId", IntegerType, nullable = false),
+      StructField("login", StringType, nullable = false),
+      StructField("name_first", StringType, nullable = false),
+      StructField("name_last", StringType, nullable = false)
+    )
+  )
+
   val userSchema: StructType = StructType(
     List(
       StructField("userId", IntegerType, nullable = false),

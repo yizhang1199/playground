@@ -4,7 +4,7 @@
 {"userId":  4, "login":  "user4", "name_first":  "Garfield"}
 {"userId":  5, "login":  "user5"}
 
-
+{"userId":  4, "login":  "user4", "name_first":  "Garfield Updated"}
 {"userId":  5, "login":  "user5", "name_first":  "Tiger"}
 I'm also malformed
 {"userId":  "666", "login":  "user666"}
