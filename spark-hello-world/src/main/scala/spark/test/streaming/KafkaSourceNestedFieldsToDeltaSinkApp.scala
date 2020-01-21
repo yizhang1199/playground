@@ -13,6 +13,8 @@ import scala.concurrent.duration._
 /**
  * See KafkaSourceToDeltaSinkApp for other Delta behaviors
  *
+ * Nested fields don't seem to be supported by DeltaTable merge operation:
+ *
  * Exception in thread "main" org.apache.spark.sql.streaming.StreamingQueryException: Nested field is not supported in the INSERT clause of MERGE operation (field = `name`.`first`).;
  * === Streaming Query ===
  * Identifier: KafkaSourceWithNestedFieldsToDeltaSinkApp$ [id = c9521462-39a2-48ae-8263-bc16eaad365c, runId = 2d2b2646-fb79-47e4-862c-185d8b845f4a]
