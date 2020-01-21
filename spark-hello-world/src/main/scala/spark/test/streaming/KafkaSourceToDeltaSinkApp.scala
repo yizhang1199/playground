@@ -6,16 +6,17 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
 import org.apache.spark.sql.types.StringType
 import spark.test.SparkHelper
-import spark.test.SparkHelper.{corruptRecordOptions, flattenedUserSchema}
+import spark.test.SparkHelper.{corruptRecordOptions, flattenedUserSchema, userSchema}
 
 import scala.concurrent.duration._
 
 /**
  * Delta Behaviors
- * 1. Nested fields not supported by merge
- * 2. If a microbatch contains a single malformed row, 1 empty parquet file will be created.  Why?
+ * 1. Nested fields not supported by merge.  Also Spark has limited support for predicate pushdown on nested fields.
+ * 2. Every malformed row in the microbatch results in a "null" row being created in a new parquet file.
+ *    Also, malformed rows are not captured in _currupt_record.
  * 3. If an existing row is updated, it is added to a new parquet file -- existing parquet files are never updated
- * 4. If an input microbatch contains duplicate rows, the entire job will be aborted.
+ * 4. If an input microbatch contains duplicate rows, the entire job will be aborted. (Expected)
  *
  * How to deserialize keys and values from Kafka streams: when using Spark, keys and values are always deserialized
  * as byte arrays with ByteArrayDeserializer. Use DataFrame operations to explicitly deserialize the values.
@@ -112,8 +113,10 @@ object KafkaSourceToDeltaSinkApp extends App {
 
   // create the delta table path otherwise streaming fails with "..." is not a Delta table
   // TODO what do we do in PROD with live streams?
-  val initialUsersDf = SparkHelper.readJson(filename = "userInit.json")
+  val initialUsersDf = SparkHelper.readJson(filename = "userInit.json", schema = userSchema)
       .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
+  // TODO if we include "_corrupt_record" in the schema, then in merge, we have to specify how "_corrupt_record" will be updated.
+  // TODO By the time merge is called, wouldn't it be too late? How do we know what value to set?
 
   println("===============initialUsersDf===============")
   initialUsersDf.printSchema()

@@ -5,6 +5,7 @@ import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.apache.spark.sql.streaming.Trigger
 import spark.test.streaming.StreamingSource.jsonSourcePath
 import spark.test.SparkHelper
+import spark.test.SparkHelper.userSchema
 
 import scala.concurrent.duration._
 /**
@@ -21,8 +22,8 @@ object FileSourceToDeltaSinkApp extends App {
 
   // TODO what do we do in PROD with live streams?
   // create the delta table path otherwise streaming fails with "..." is not a Delta table
-  val initialUsersDf = SparkHelper.readJson(filename = "userInit.json")
-    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
+  val initialUsersDf = SparkHelper.readJson(filename = "userInit.json", schema = userSchema)
+    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"), $"_corrupt_record")
     .write
     .format("delta")
     .mode(SaveMode.Overwrite)
@@ -38,7 +39,7 @@ object FileSourceToDeltaSinkApp extends App {
   streamingDF.printSchema()
 
   streamingDF
-    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"))
+    .select($"userId", $"login", $"name.first".as("name_first"), $"name.last".as("name_last"), $"_corrupt_record")
     .writeStream
     .queryName(name)
     .trigger(Trigger.ProcessingTime(1.seconds))

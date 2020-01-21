@@ -4,6 +4,8 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import scala.reflect.io.{Directory, File}
 
+import spark.test.SparkHelper.personSchema
+
 /**
  * Predicate Pushdown for Nested fields is not complete on spark 2.4.4
  *
@@ -40,7 +42,7 @@ object NestedFieldsApp extends App {
 
   implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
-  val nestedJsonDF = SparkHelper.readJson(filename = "personsMultiLine.json", multiLine = true)
+  val nestedJsonDF = SparkHelper.readJson(filename = "personsMultiLine.json", personSchema, multiLine = true)
 
   /**
    * root

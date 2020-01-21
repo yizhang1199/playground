@@ -1,7 +1,7 @@
 package spark.test
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.{ArrayType, DateType, IntegerType, StringType, StructField, StructType}
 
 import scala.reflect.io.{Directory, File}
 
@@ -32,7 +32,7 @@ object SparkHelper {
     spark
   }
 
-  def readJson(filename: String, multiLine: Boolean = false)
+  def readJson(filename: String, schema: StructType, multiLine: Boolean = false)
               (implicit spark: SparkSession): DataFrame = {
     val jsonDf = spark
       .read
@@ -41,7 +41,7 @@ object SparkHelper {
       .options(corruptRecordOptions)
       .option("multiLine", multiLine.toString)
       .option("dateFormat", "yyyy-MM-dd")
-      //.schema(schema)
+      .schema(schema)
       .json(this.getClass.getClassLoader.getResource(s"json/$filename").getFile)
 
     jsonDf
@@ -52,7 +52,8 @@ object SparkHelper {
       StructField("userId", IntegerType, nullable = false),
       StructField("login", StringType, nullable = false),
       StructField("name_first", StringType, nullable = false),
-      StructField("name_last", StringType, nullable = false)
+      StructField("name_last", StringType, nullable = false),
+      StructField("_corrupt_record", StringType, nullable = true)
     )
   )
 
@@ -65,6 +66,30 @@ object SparkHelper {
           StructField("first", StringType, nullable = true),
           StructField("last", StringType, nullable = true)
         )),
+        nullable = true),
+      StructField("_corrupt_record", StringType, nullable = true)
+    )
+  )
+
+  val personSchema: StructType = StructType(
+    List(
+      StructField("name", StringType, nullable = false),
+      StructField("age", IntegerType, nullable = true),
+      StructField("address",
+        StructType(List(
+          StructField("city", StringType, nullable = true),
+          StructField("street", StringType, nullable = true),
+          StructField("country", StringType, nullable = true)
+        )),
+        nullable = true),
+      StructField("children",
+        ArrayType(
+          StructType(List(
+            StructField("name", StringType, nullable = true),
+            StructField("age", IntegerType, nullable = true),
+            StructField("birthdate", DateType, nullable = true)
+          ))
+        ),
         nullable = true),
       StructField("_corrupt_record", StringType, nullable = true)
     )
