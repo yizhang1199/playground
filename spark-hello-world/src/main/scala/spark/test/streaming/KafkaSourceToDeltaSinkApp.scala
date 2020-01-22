@@ -17,7 +17,7 @@ import scala.concurrent.duration._
  *    Also, malformed rows are not captured in _currupt_record.
  * 3. If an existing row is updated, it is added to a new parquet file -- existing parquet files are never updated. (Expected)
  * 4. If an input microbatch contains duplicate rows, the entire job will be aborted. (Expected)
- * 5. When configuring a Kafca source to write to a delta streaming sink, using an empty directory will fail because the empty directory "is not a Delta table".
+ * 5. When configuring a Kafka source to write to a delta streaming sink, using an empty directory will fail because the empty directory "is not a Delta table".
  *    But before the source stream is written to the delta sink, we will have an empty directory.  What's the right way to deal with this?
  *
  * How to deserialize keys and values from Kafka streams: when using Spark, keys and values are always deserialized
