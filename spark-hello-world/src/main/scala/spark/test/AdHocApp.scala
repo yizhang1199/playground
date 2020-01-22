@@ -12,7 +12,7 @@ object AdHocApp extends App {
 
   val df = spark.read
       .format("delta")
-      .load("/Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/streaming-sinks/KafkaSourceToDeltaSinkApp$/output.delta")
+      .load("/Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/streaming-sinks/FileSourceToDeltaSinkApp$/output.delta")
 
   df.printSchema()
   df.sort("userId").show(20, truncate = false)
