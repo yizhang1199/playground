@@ -2,7 +2,7 @@
 {"userId":  2, "login":  "user2", "name":  {"first": "Mickey", "last":  "Mouse"}}
 {"userId":  "malformed-userId", "blah": "I'm an invalid row" }
 {"login":  "missingUserId", "blah":  "This column will be ignored"}
-{"userId":  1, "login":  "user1-duplicate", "name":  {"first": "Hello", "last":  "Kitty Duplicate"}}
 I'm another corrupt row with no userId.
 {"userId":  3, "login":  "user3", "name":  {"first": "Minie", "last":  "Mouse"}}
 {"userId":  4, "login":  "user4", "name":  {"first": "Garfield"}}
+{"userId":  1, "login":  "user1-duplicate", "name":  {"first": "Hello", "last":  "Kitty Duplicate"}}

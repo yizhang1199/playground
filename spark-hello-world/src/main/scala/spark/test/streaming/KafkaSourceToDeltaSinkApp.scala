@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 
 /**
  * Delta Behaviors
- * 1. Nested fields not supported by merge.  Also Spark has limited support for predicate pushdown on nested fields.
+ * 1. Nested fields not supported by DeltaTable.merge.  Also Spark has limited support for predicate pushdown on nested fields.
  * 2. Every malformed row in the microbatch results in a "null" row being created in a new parquet file.
  *    Also, malformed rows are not captured in _currupt_record.
  * 3. If an existing row is updated, it is added to a new parquet file -- existing parquet files are never updated. (Expected)
