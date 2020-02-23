@@ -50,7 +50,7 @@ trait M[T] { // Monad is a type class
 }
 
 // Example1: Using Option Monad to remove boilerplate "if non-null" logic
-case class Double(x: Int) {
+case class MyDouble(x: Int) {
   def compute: Option[Int] =
     if (x % 2 == 0) Some(x * 2)
     else None
@@ -71,19 +71,19 @@ case class Increment(x: Int) {
 // code will be much more readable if we use for expressions for nested flatMap and map
 val nonValue =
   for {
-    double <- Double(3).compute
+    double <-  MyDouble(3).compute
     triple <- Triple(2).compute
     inc <- Increment(9).compute
   } yield double + triple + inc
 val nonValueEquivalent =
-  Double(3).compute.flatMap(double => {
+  MyDouble(3).compute.flatMap(double => {
     Triple(2).compute.flatMap(triple => {
       Increment(9).compute.map(inc => double + triple + inc)
     })
   })
 val someValue =
   for {
-    double <- Double(2).compute
+    double <- MyDouble(2).compute
     triple <- Triple(3).compute
     inc <- Increment(2).compute
   } yield double + triple + inc

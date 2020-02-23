@@ -88,10 +88,10 @@ object ImplicitClasses extends App {
   // implicitly
   implicit val MyString: String = "Hello World!"
   val TestImplicitly = implicitly[String]
-  println(s"TestImplicitly=$TestImplicitly")
+  println(s"TestImplicitly=$TestImplicitly") // TestImplicitly=Hello World!
 
   // Context Bound.  "[A : B]" is syntactic sugar for "implicit myVar: B[A]"
-  def g[A](a: A)(implicit numeric: Numeric[A]): String = s"Hello implicit world $a times!"
+  def g[A](a: A)(implicit numeric: Numeric[A]): String = s"Hello implicit world $a times! numeric=$numeric"
   def f[A : Numeric](a: A): Unit = {
     val myImplicitParameter = implicitly[Numeric[A]] // Not needed if f simply passes it on to g
     println(s"f: myImplicitParameter=$myImplicitParameter; g($a)=${g(a)}")

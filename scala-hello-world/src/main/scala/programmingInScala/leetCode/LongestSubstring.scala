@@ -26,28 +26,26 @@ import scala.collection.mutable
 object LongestSubstring extends App {
 
   def lengthOfLongestSubstring(s: String): Int = {
-    if (s == 0 || s.isEmpty) 0
-    else findLongestIterative(s.toVector)
-  }
+    require(s != null)
+    val chars = s.toVector
+    val length = s.length
+    val charsProcessed = mutable.Map[Char, Int]()
 
-  @tailrec
-  private def findLongest(chars: Seq[Char], longestSoFar: Int = 0): Int = {
-    val charsProcessed: mutable.Set[Char] = mutable.Set()
-    val firstDuplicate = chars.find { char =>
-      val distinct = !charsProcessed.contains(char)
-      if (distinct) charsProcessed.add(char)
-      !distinct
+    @tailrec
+    def findLongest(start: Int = 0, current: Int = 0, longest: Int = 0): Int = {
+      if (current >= length) {
+        Math.max(longest, current - start)
+      } else {
+        val currentChar = chars(current)
+        val duplicateIndex = charsProcessed.get(currentChar)
+        charsProcessed += (currentChar -> current)
+        var newStart = start
+        if (duplicateIndex.isDefined && duplicateIndex.get >= start) newStart = duplicateIndex.get + 1
+        findLongest(newStart, current + 1, Math.max(longest, current - start))
+      }
     }
 
-    println(s"chars=$chars, charsProcessed=$charsProcessed")
-
-    val longest = Math.max(longestSoFar, charsProcessed.size)
-    if (firstDuplicate.isDefined) {
-      val firstDuplicateIndex = chars.indexOf(firstDuplicate.get)
-      findLongest(chars.slice(firstDuplicateIndex + 1, chars.length), longest)
-    } else {
-      longest
-    }
+    findLongest()
   }
 
   private def findLongestIterative(chars: Vector[Char]): Int = {
@@ -100,4 +98,5 @@ object LongestSubstring extends App {
   assert(3 == lengthOfLongestSubstring("dvdf"))
   assert(5 == lengthOfLongestSubstring("anviaj"))
   assert(6 == lengthOfLongestSubstring("abcdef"))
+  assert(0 == lengthOfLongestSubstring(""))
 }

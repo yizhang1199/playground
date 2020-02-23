@@ -1,3 +1,5 @@
+import scala.Double
+
 // Stream has been deprecated and replaced by LazyList starting from 2.13.0
 def from(n: Int): LazyList[Int] = {
   n #:: from(n + 1)

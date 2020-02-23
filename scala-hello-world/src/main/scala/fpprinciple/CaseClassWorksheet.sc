@@ -2,14 +2,15 @@
  * Case classes are: <br>
  * 1. Immutable
  *
- * 2. Decomposable through pattern matching
+ * 2. Decomposable through pattern matching.  Compiler auto-generates unapply.
  * (Only the Primary constructor.  Auxiliary constructors cannot be used in pattern matching)
  *
- * 3. Allows for comparison based on structure instead of reference
+ * 3. Allows for comparison based on structure instead of reference.  Compiler adds natural implementations for
+ * equals and hashCode
  *
  * 4. Easy to use and manipulate:
  * # case class is actually a shorthand which, in addition to defining a class, also
- * creates a companion object with a few methods: apply, unapply, copy, etc.
+ * creates a companion object with a few methods: apply, unapply, copy, equals, hashCode, etc.
  * We can still define companion object for a case class (in order to define a companion object for a
  * class you have to set the same names for them and declare them in the same file.) and define other methods.
  * # Each argument in the primary constructor has a corresponding getter generated.

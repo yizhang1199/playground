@@ -37,6 +37,10 @@ object MySingleton {
     print(s"calculated $element, ")
     element
   }
+
+  def powerOf(x: Double): LazyList[Double] = {
+    x #:: powerOf(x).map(_ * x)
+  }
 }
 
 println("range1-1: " + (MySingleton.range1 take 6 mkString " "))
@@ -45,3 +49,4 @@ MySingleton.range2
 MySingleton.range2
 println("range3: " + (MySingleton.range3() take 6 mkString " "))
 println("range3: " + (MySingleton.range3() take 6 mkString " "))
+println("powerOf(2.0): " + (MySingleton.powerOf(2.0) take 4 mkString ", "))

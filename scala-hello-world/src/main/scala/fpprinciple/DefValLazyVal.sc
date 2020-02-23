@@ -72,6 +72,22 @@ class MyImpl extends MyTrait {
  * from the anonymous class per val function, even if the same function expression is used for multiple vals.
  * (This behavior applies to lambda expressions as well -- see link 1 below)
  *
+ * Partial functions: Scala compiler adds an additional method for PartialFunctions.  Example:
+ *
+ * val second: PartialFunction[List[Int],Int] = {
+ *   case x :: y :: _ => y
+ * }
+ * The above is translated by compiler to:
+ * new PartialFunction[List[Int], Int] {
+ *   def apply(xs: List[Int]) = xs match {
+ *     case x :: y :: _ => y
+ *   }
+ *   def isDefinedAt(xs: List[Int]) = xs match {
+ *     case x :: y :: _ => true
+ *     case _ => false
+ *   }
+ * }
+ *
  * Java vs Scala
  * Java creates a private static method in the same class for each Java lambda expression and uses
  * "invokedynamic" to invoke the lambda expression at runtime, which is more performant, because

@@ -1,6 +1,10 @@
 class Person(val name: String, val age: Int)
 
-// for pattern matching, the object does NOT need to have the same name as the class
+/**
+ * For pattern matching, the object does NOT need to have the same name as the class
+ *
+ * Extractor objects: https://docs.scala-lang.org/tour/extractor-objects.html
+ */
 object Person {
   def apply(name: String, age: Int): Person = new Person(name, age)
 

@@ -31,6 +31,8 @@ object HelloWorld {
     val matcher = ingestDatePattern.matcher(location)
     println("matched=" + matcher.matches())
     println("ingest_date=" + matcher.group(1))
+
+    println("2 ^ -2147483648 = " + Math.pow(2.0, -2147483648))
   }
 }
 

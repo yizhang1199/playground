@@ -19,8 +19,8 @@ import scala.collection.mutable.ListBuffer
  */
 object PascalsTriangle {
 
-  def rows(size: Int): List[List[Int]] = createRows(size).reverse
-  //def rows(size: Int): List[List[Int]] = createRowsWith2Folds(size)
+  //def rows(size: Int): List[List[Int]] = createRows(size).reverse
+  def rows(size: Int): List[List[Int]] = getRowsUsingMemoization(size)
 
   @tailrec
   private def createRows(size: Int, rowsCreatedSoFar: List[List[Int]] = List()): List[List[Int]] = size match {
@@ -32,7 +32,22 @@ object PascalsTriangle {
   private def createNextRow(rowsCreatedSoFar: List[List[Int]]): List[Int] = rowsCreatedSoFar match {
     case Nil => List(1)
     case headRow :: _ =>
-      (0 +: headRow :+ 0).sliding(2).map(list => list.sum).toList // List(1).sliding(2) will return List(List(1))
+      (0 +: headRow :+ 0).sliding(2).map(list => list.sum).toList // List(1, 2, 3).sliding(2) will return Iterator(List(1, 2), List(2, 3))
+  }
+
+  private def getRowsUsingMemoization(size: Int): List[List[Int]] = {
+    lazy val lazyRows: LazyList[List[Int]] = List(1) #:: lazyRows.map(createNextRowLazy)
+    lazyRows.take(size).toList
+  }
+
+  private def createNextRowLazy(currentRow: List[Int]): List[Int] = {
+    val nextRowIndex = currentRow.length
+    val result = for {col <- 0 to nextRowIndex} yield col match {
+      case 0 | `nextRowIndex` => 1
+      case _ => currentRow(col - 1) + currentRow(col)
+    }
+
+    result.toList
   }
 
   // Alternative solutions found in the community
