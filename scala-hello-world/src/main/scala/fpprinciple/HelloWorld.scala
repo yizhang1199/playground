@@ -1,13 +1,13 @@
 package fpprinciple
 
-import java.util.regex.{Matcher, Pattern}
+import java.util.regex.Pattern
 
 object HelloWorld {
   def main(args: Array[String]): Unit = {
     println("Hello World!")
-    val x: IntSet = new NonEmpty(2, Empty, Empty);
+    val x: IntSet = new NonEmpty(2, Empty, Empty)
     val y: IntSet = x include 5
-    val z: IntSet = new NonEmpty(7, Empty, Empty);
+    val z: IntSet = new NonEmpty(7, Empty, Empty)
 
     println(x)
     println(y)
@@ -55,9 +55,9 @@ object Empty extends IntSet {
 class NonEmpty(n: Int, l: IntSet, r: IntSet) extends IntSet {
   require(l != null, "left tree must not be null")
   require(r != null, "right tree must not be null")
-  def node = n
-  def left = l
-  def right = r
+  def node: Int = n
+  def left: IntSet = l
+  def right: IntSet = r
 
   override def union(obj: IntSet): IntSet = {
     if (obj == null || obj == Empty) {

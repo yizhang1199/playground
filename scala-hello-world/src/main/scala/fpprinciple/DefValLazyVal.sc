@@ -8,17 +8,17 @@
  */
 def expr: Int = {
   val valExample = {
-    print("val; ");
+    print("val; ")
     5
   }
 
   def defExample = {
-    print("def; ");
+    print("def; ")
     4
   }
 
   lazy val lazyValExample = {
-    print("lazy val; ");
+    print("lazy val; ")
     3
   }
 
@@ -129,15 +129,15 @@ val lambdaExpr4: (Int, Int) => Int = (x: Int, y: Int) => { // same as lambdaExpr
   val z = x + y
   z
 }
-val lambdaExpr5 = (x: Int, y: Int) => (x + y) // same as lambdaExpr4
+val lambdaExpr5 = (x: Int, y: Int) => x + y // same as lambdaExpr4
 val lambdaExpr6 = (_: Int) + (_: Int) // same as lambdaExpr5, _ must appear only once for each parameter
 
 lambdaExpr4(5, 6)
 
-def doNothingDef() = {
+def doNothingDef(): Unit = {
   println("doNothingDef: I actually do something")
 }
-def doNothingDef2 = {
+def doNothingDef2: Unit = {
   println("doNothingDef2: I actually do something")
 }
 doNothingDef
@@ -210,7 +210,7 @@ val plus10 = methodThatReturnsFunction(10)
 plus10(3) // 10 + 3
 
 // with def you can write a function that takes a generic type, but not with val
-def m1[A]: (A) => Int = (a: A) => a.toString.length
+def m1[A]: A => Int = (a: A) => a.toString.length
 val f = m1[Int] // coerce a parameterized method into a function
 m1[Int](3456)
 f(345)
@@ -226,7 +226,7 @@ f2.isInstanceOf[Function1[Int, Int]]
 
 // explicitly define the type for f3, which is "(Int) => Int"
 // since the type for f3 is explicitly defined, Scala will automatically convert the method "m2[Int]" to the expected function
-val f3: (Int) => Int = m2[Int]
+val f3: Int => Int = m2[Int]
 
 // function values can be defined as vars as well.
 var increase = (x: Int) => x + 1

@@ -19,7 +19,7 @@ def printCapital2(country: String): Unit = capitalOfCountry.get(country) match {
 printCapital2("China")
 printCapital2("Blah")
 
-val mapWithListValues = Map("key1" -> List("a", "b"), "key2" -> List("c", "d", "e"))
+val mapWithListValues = Map("key1" -> List("a", "b"), "key2" -> List("c", "d", "e")) ++ Map("key3" -> List("x", "y"))
 val foreachTest = mapWithListValues.foreach {
   p: (String, List[String]) => println(p._1 +: p._2)
 }

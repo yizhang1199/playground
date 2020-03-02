@@ -58,7 +58,7 @@ case class AlphabetAddition(addends: List[String], sum: String) {
   }
 
   def solve: Option[Map[Char, Int]] = {
-    allSolutionsUsingCombinationsAndPermutations.collectFirst {
+    allSolutions().collectFirst {
       case solution: Map[Char, Int] if isValid(solution) => solution
     }
   }

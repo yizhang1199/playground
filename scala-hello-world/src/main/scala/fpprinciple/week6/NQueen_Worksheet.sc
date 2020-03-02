@@ -46,5 +46,7 @@ def show(queens: List[(Int, Int)]) : String = {
 }
 
 (nqueen(1) map show) mkString ("\n-----\n")
+(nqueen(2) map show) mkString ("\n-----\n")
+(nqueen(3) map show) mkString ("\n-----\n")
 (nqueen(4) map show) mkString ("\n-----\n")
 (nqueen(5) map show) mkString ("\n-----\n")

@@ -1,3 +1,4 @@
+
 // Introduction to for-expression: https://www.youtube.com/watch?v=Jf6Us5bSOJ4&list=PLTeAcbOFvqaGtSMysJzzcYhrZyzpKyvKN&index=3&t=0s
 // N-Queen problem:
 
@@ -122,6 +123,20 @@ for {
   x <- 1 to 3 // y cannot be used yet as it hasn't be declared
   y = x ^ 3 // val should not be used, expressions after this can use y
 } println(s"$x^3 = $y") // both x and y can be referenced here
+
+/**
+ *
+ */
+def generatePermutations(list: List[Int]): List[List[Int]] = list match {
+  case List() | _ :: Nil => List(list)
+  case _ =>
+    for {listItem <- list
+         subList = list.filter(_ != listItem) // define a local val
+         subPermList <- generatePermutations(subList)} yield {
+      listItem +: subPermList
+    }
+}
+println("permutations(1, 2, 3)=" + generatePermutations(List(1, 2, 3)))
 
 /**
  * Use Applicatives with Disjunctions
