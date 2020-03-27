@@ -83,8 +83,7 @@ object KafkaSourceNestedFieldsToDeltaSinkApp extends App {
     .load()
     .select($"value".cast(StringType))
     .select(from_json($"value", userSchema, corruptRecordOptions).as("data"))
-    .select("data.*", "*") // TODO is this the best way to explode a StructType column?
-    .drop("data")
+    .select("data.*")
   /**
    * root
    * |-- data: struct (nullable = true)

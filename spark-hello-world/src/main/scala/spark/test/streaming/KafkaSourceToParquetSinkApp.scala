@@ -24,14 +24,14 @@ object KafkaSourceToParquetSinkApp extends App {
   /**
    * Kafka source has a fixed schema and cannot be set with a custom one:
    *
-   * * root
-   * * |-- key: binary (nullable = true)
-   * * |-- value: binary (nullable = true)
-   * * |-- topic: string (nullable = true)
-   * * |-- partition: integer (nullable = true)
-   * * |-- offset: long (nullable = true)
-   * * |-- timestamp: timestamp (nullable = true)
-   * * |-- timestampType: integer (nullable = true)
+   * root
+   * |-- key: binary (nullable = true)
+   * |-- value: binary (nullable = true)
+   * |-- topic: string (nullable = true)
+   * |-- partition: integer (nullable = true)
+   * |-- offset: long (nullable = true)
+   * |-- timestamp: timestamp (nullable = true)
+   * |-- timestampType: integer (nullable = true)
    */
   val streamingDF = spark // TODO from_json does not work with columnNameOfCorruptRecord -- bad rows are dropped
     .readStream

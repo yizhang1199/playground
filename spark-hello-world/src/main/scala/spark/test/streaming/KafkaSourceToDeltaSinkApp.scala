@@ -127,8 +127,7 @@ object KafkaSourceToDeltaSinkApp extends App {
     .load()
     .select($"value".cast(StringType))
     .select(from_json($"value", flattenedUserSchema, corruptRecordOptions).as("data"))
-    .select("data.*", "*") // TODO is this the best way to explode a StructType column?
-    .drop("data")
+    .select("data.*") // bring everything under data to top level
 
   /**
    * root
