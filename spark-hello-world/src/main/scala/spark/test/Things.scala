@@ -12,7 +12,7 @@ object Things {
   private[test] def setup(spark: SparkSession): DataFrame = {
     import spark.implicits._
 
-    val range = spark.range(1, 1201) // id: long
+    val range = spark.range(1, 121) // id: long
 
     val thingName = udf { id: Long => s"Thing $id" }
 
