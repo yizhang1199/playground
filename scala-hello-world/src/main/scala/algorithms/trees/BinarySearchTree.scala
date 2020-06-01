@@ -25,10 +25,20 @@ case class BinarySearchTree[T](private val value: T) {
     breadthFirstSearchRecursive()
   }
 
-  private def breadthFirstSearchRecursive(node: TreeNode[T] = root, result: Queue[T] = Queue()): Queue[T] = {
-    val parentResult = result :+ node.value
-    val leftResult = breadthFirstSearchRecursive(node.left, parentResult)
-    breadthFirstSearchRecursive(node.right, leftResult)
+  def breadthFirstSearchRecursive(node: TreeNode[T] = root, result: Queue[T] = Queue(root.value)): Queue[T] = {
+    if (node == null) {
+      result
+    } else {
+      var newResult = result
+      if (node.left != null) {
+        newResult = newResult :+ node.left.value
+      }
+      if (node.right != null) {
+        newResult = newResult :+ node.right.value
+      }
+      val leftResult = breadthFirstSearchRecursive(node.left, newResult)
+      breadthFirstSearchRecursive(node.right, leftResult)
+    }
   }
 
   def breadthFirstSearchIterative: Queue[T] = {

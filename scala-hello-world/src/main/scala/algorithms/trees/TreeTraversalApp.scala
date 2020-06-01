@@ -27,6 +27,10 @@ object TreeTraversalApp extends App {
   assert(binarySearchTree.postOrderTraversal == binarySearchTree.postOrderTraversalIterative)
 
   // breadth first search: F, B, G, A, D, I, C, E, H
-  println(s"breadthFirstSearchIterative=${binarySearchTree.breadthFirstSearchIterative}")
+  println(s"breadthFirstSearchIterative=${binarySearchTree.breadthFirstSearchTraversal}")
   assert(Seq("F", "B", "G", "A", "D", "I", "C", "E", "H") == binarySearchTree.breadthFirstSearchIterative)
+
+  println(s"breadthFirstSearchIterative=${binarySearchTree.breadthFirstSearchIterative}")
+  println(s"breadthFirstSearchRecursive=${binarySearchTree.breadthFirstSearchRecursive()}")
+  assert(Seq("F", "B", "G", "A", "D", "I", "C", "E", "H") == binarySearchTree.breadthFirstSearchRecursive())
 }

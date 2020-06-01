@@ -31,11 +31,17 @@ import scala.util.Try
 object ImplicitClasses extends App {
 
   /**
+   *
    * An implicit class is desugared into a class and implicit method pairing, where the implicit method mimics
    * the constructor of the class, example:
    *
    * object ImplicitClasses extends App {
    *   implicit final def MyEnrichedString(s: String): MyEnrichedString = new MyEnrichedString(s)
+   *   class MyEnrichedString(strVal: String) {
+   *     def asInt: Option[Int] = {
+   *       Try(strVal.toInt).toOption
+   *     }
+   *   }
    * }
    *
    * Without extending from AnyVal, an instance of the implicit class will always be created every time the
@@ -47,10 +53,16 @@ object ImplicitClasses extends App {
       Try(strVal.toInt).toOption
     }
   }
-  // Example 2 (equivalent to Example 1 but intentionally using different name to avoid compilation errors).
-  class MyEnrichedString2(strVal: String) {
-    def asInt2: Option[Int] = {
-      Try(strVal.toInt).toOption
+
+  val AsIntTestSome = "1234".asInt // Some(1234)
+  val AsIntTestNone = "blah".asInt // None
+  val StringAsInt = MyEnrichedString("1234").asInt
+  println(s"AsIntTestSome=$AsIntTestSome AsIntTestNone=$AsIntTestNone StringAsInt=$StringAsInt")
+
+  // Example 2: (equivalent to Example 1 except Long is enriched instead of String).
+  class MyEnrichedLong(input: Long) {
+    def asInt: Option[Int] = {
+      Try(input.toInt).toOption
     }
   }
   // implicit def methods should be avoided as much as possible as it is very difficult to trace and
@@ -58,25 +70,21 @@ object ImplicitClasses extends App {
   // to be explicitly enabled, by either: adding "import scala.language.implicitConversions" or
   // by setting the compiler option -language:implicitConversions
   import scala.language.implicitConversions
-  implicit def toMyEnrichedString(strVal: String): MyEnrichedString2 = new MyEnrichedString2(strVal)
+  implicit def toMyEnrichedString(input: Long): MyEnrichedLong = new MyEnrichedLong(input)
 
   /**
    * When possible, always make the implicit class a value class, by extending from AnyVal, for allocation-free
    * extension methods; however, due to limitations for value classes, it may not always be possible.
    * The compiler will create a companion object for MyEnrichedInt, e.g. MyEnrichedInt$.  At runtime,
-   * an expression "3 times 5" will be optimised to the equivalent of a method call on a static object, e.g.
-   * MyEnrichedInt$.MODULE$.extension$times(5), rather than a method call on a newly instantiated object.
+   * an expression "3 repeats sayHello" will be optimised to the equivalent of a method call on a static object, e.g.
+   * MyEnrichedInt$.MODULE$.extension$repeats(sayHello), rather than a method call on a newly instantiated object.
    */
+  // Example 3
   implicit class MyEnrichedInt(val intVal: Int) extends AnyVal {
     def repeats(op: => Unit): Unit = {
       (1 to intVal).foreach(_ => op)
     }
   }
-
-  val AsIntTestSome = "1234".asInt // Some(1234)
-  val AsIntTestNone = "blah".asInt // None
-  MyEnrichedString("1234").asInt // TODO There is no ImplicitClasses.MyEnrichString$.class, why does this work?
-  println(s"AsIntTestSome=$AsIntTestSome AsIntTestNone=$AsIntTestNone")
 
   2 repeats println("Hello World!")
   // Compiler auto-generated companion object for MyEnrichedInt, e.g. ImplicitClasses.MyEnrichedInt$.class

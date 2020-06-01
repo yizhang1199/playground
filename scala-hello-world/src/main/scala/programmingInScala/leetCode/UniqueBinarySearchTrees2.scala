@@ -37,41 +37,38 @@ object UniqueBinarySearchTrees2 extends App {
     case _ => generateTrees((1 to n).toList)
   }
 
-  private def generateTrees(list: List[Int]): List[TreeNode] = list match {
-    case List() => List()
-    case head +: Nil => List(new TreeNode(head))
-    case _ =>
-      for {
-        value <- list
-        subList: List[Int] = list diff List(value)
-        subTree <- generateTrees(subList)
-      } yield {
-        insertValue(subTree, value)
-        subTree
-      }
+  private def generateTrees(list: List[Int]): List[TreeNode] = {
+    list match {
+      case List() => List()
+      case head +: Nil => List(new TreeNode(head))
+      case _ =>
+        for {
+          value <- list
+          subList: List[Int] = list diff List(value)
+          subTree <- generateTrees(subList)
+        } yield {
+          insertValue(subTree, value)
+          subTree
+        }
+    }
   }
 
   @tailrec
-  private def insertValue(current: TreeNode, value: Int): Unit = value match {
-    case x: Int if x == current.value =>
-    case x: Int if x < current.value =>
-      if (current.left == null) current.left = new TreeNode(value)
-      else insertValue(current.left, value)
+  private def insertValue(node: TreeNode, value: Int): Unit = value match {
+    case x: Int if x == node.value =>
+    case x: Int if x < node.value =>
+      if (node.left == null) node.left = new TreeNode(value)
+      else insertValue(node.left, value)
     case _ =>
-      if (current.right == null) current.right = new TreeNode(value)
-      else insertValue(current.right, value)
+      if (node.right == null) node.right = new TreeNode(value)
+      else insertValue(node.right, value)
   }
 
-  private def isEqual(node1: TreeNode, node2: TreeNode): Boolean = (node1, node2) match {
+  private def isEqual(tree1: TreeNode, tree2: TreeNode): Boolean = (tree1, tree2) match {
     case (null, null) => true
     case (null, _) => false
     case (_, null) => false
-    case (n1, n2) => n1.value == n2.value && isEqual(n1.left, n2.left) && isEqual(n1.right, n2.right)
-  }
-
-  private def permutations(n: Int): List[List[Int]] = n match {
-    case 0 => List()
-    case _ => permutations((1 to n).toList) // can also use (1 to n).permutations
+    case (t1, t2) => t1.value == t2.value && isEqual(t1.left, t1.left) && isEqual(t1.right, t2.right)
   }
 
   private def permutations(list: List[Int]): List[List[Int]] = list match {

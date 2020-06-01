@@ -16,12 +16,17 @@ package exercises.implicits
  * 2.a) there are many possible values for the implicit parameter
  * 2.b) but a single good one for most of the cases
  * 2.c) and you can edit the code for the type
+ *
+ *
+ * Use at least one custom name within the type of an implicit parameter to minimize accidentals matches. This is
+ * because the compiler selects implicit parameters by matching types of parameters against types of values in scope.
+ * For example, avoid using String as implicit parameter type.
  */
 object ImplicitParameters extends App {
 
   case class Person(name: String, age: Int)
 
-  val Persons = List(
+  val Persons: List[Person] = List(
     Person("Bob", 101),
     Person("Amy", 100),
     Person("Lucky", 21))
@@ -38,10 +43,10 @@ object ImplicitParameters extends App {
    *    (without a prefix) at the point the method with the implicit parameter block is called.
    * 2. Imported scope
    * 3. Companion objects of all types involved in the method signature, in this case persons.sorted, which translates
-   * to "def sorted[B >: A](implicit ord: Ordering[B]): C" where A is Person, and C is List.  So all types are:
-   * List
-   * Ordering
-   * Person or any supertype of Person
+   *    to "def sorted[B >: A](implicit ord: Ordering[B]): C" where A is Person, and C is List.  So all types are:
+   *    List
+   *    Ordering
+   *    Person or any supertype of Person
    */
   object AgeOrdering {
     implicit val AgeOrdering: Ordering[Person] = Ordering.fromLessThan(_.age < _.age)

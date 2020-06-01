@@ -1,5 +1,9 @@
 import scala.annotation.tailrec
 
+/**
+ * A higher order function is a function that takes a function as an argument, or returns a function.
+ */
+
 def cube(a: BigInt) : BigInt = {
   a * a * a
 }

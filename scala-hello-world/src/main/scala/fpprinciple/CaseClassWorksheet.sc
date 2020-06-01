@@ -6,7 +6,7 @@
  * (Only the Primary constructor.  Auxiliary constructors cannot be used in pattern matching)
  *
  * 3. Allows for comparison based on structure instead of reference.  Compiler adds natural implementations for
- * equals and hashCode
+ * equals, hashCode, (and canEqual?)
  *
  * 4. Easy to use and manipulate:
  * # case class is actually a shorthand which, in addition to defining a class, also

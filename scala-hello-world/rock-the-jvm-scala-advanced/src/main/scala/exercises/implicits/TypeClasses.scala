@@ -22,15 +22,15 @@ object TypeClasses extends App {
     def somethingElse: String = "something else"
   }
 
+  // Part 2: Type class instance2, often declared implicit and lives in its own class file to avoid ambiguity
+  implicit object FullUserEquality extends MyEqual[User] {
+    override def areEqual(user1: User, user2: User): Boolean = user1.name == user2.name && user1.email == user2.email
+  }
+
   // Part 2: Type class instance1, often declared implicit and lives in its own class file to avoid ambiguity
   // Can't mark NameEquality as implicit here due to ambiguity with FullUserEquality
   object NameEquality extends MyEqual[User] {
     override def areEqual(user1: User, user2: User): Boolean = user1.name == user2.name
-  }
-
-  // Part 2: Type class instance2
-  implicit object FullUserEquality extends MyEqual[User] {
-    override def areEqual(user1: User, user2: User): Boolean = user1.name == user2.name && user1.email == user2.email
   }
 
   /**
@@ -78,7 +78,14 @@ object TypeClasses extends App {
       myEqual.areEqual(value, anotherValue)
     }
 
-    // TODO this fails with "type mismatch" but why?
+    /**
+     * TODO this fails with "type mismatch" but why?
+     *
+     * Error:(84, 24) type mismatch;
+     * found   : TypeSafeEqual.this.value.type (with underlying type T)
+     * required: T
+     *       myEqual.areEqual(value, anotherValue)
+     */
 //    def tsEqual[T: MyEqual](anotherValue: T): Boolean = { // use context bound syntax sugar, preferred
 //      val myEqual = implicitly[MyEqual[T]]
 //      myEqual.areEqual(value, anotherValue)

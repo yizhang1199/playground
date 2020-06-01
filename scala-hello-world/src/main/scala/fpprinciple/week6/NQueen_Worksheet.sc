@@ -24,11 +24,12 @@ def nqueen(n: Int): Set[List[(Int, Int)]] = {
       queensPlacedSet
     } else {
       val row = k - 1; // row index is 0-based
-      val queensPlacedSet: Set[List[(Int, Int)]] = for {
-        queensPlaced: List[(Int, Int)] <- placeQueens(k - 1)
-        col: Int <- (0 until n) // col index is 0-based
-        if isSafe(row, col, queensPlaced)
-      } yield (row, col) :: queensPlaced
+      val queensPlacedSet: Set[List[(Int, Int)]] =
+        for {
+          queensPlaced: List[(Int, Int)] <- placeQueens(k - 1)
+          col: Int <- (0 until n) // col index is 0-based
+          if isSafe(row, col, queensPlaced)
+        } yield (row, col) :: queensPlaced
       println("k=" + k + ": queensPlaced=" + queensPlacedSet)
       queensPlacedSet
     }
@@ -37,10 +38,10 @@ def nqueen(n: Int): Set[List[(Int, Int)]] = {
   placeQueens(n)
 }
 
-def show(queens: List[(Int, Int)]) : String = {
+def show(queens: List[(Int, Int)]): String = {
   val length = queens.length
   val lines: List[String] =
-    for ((_, col) <- queens.reverse)
+    for ( (_, col) <- queens.reverse )
       yield (Vector.fill(length)("* ").updated(col, "X ")).mkString
   "\n" + lines.mkString("\n")
 }

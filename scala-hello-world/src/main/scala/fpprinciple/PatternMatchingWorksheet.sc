@@ -1,3 +1,5 @@
+
+
 class Person(val name: String, val age: Int)
 
 /**
@@ -48,7 +50,7 @@ object negative {
   def unapply(n: Int): Boolean = n < 0
 }
 
-for (i <- List(2, 3, 11, -9)) {
+for ( i <- List(2, 3, 11, -9) ) {
   println(i match {
     case negative() => println(s"$i is negative")
     case even(_) => println(s"$i is even")
@@ -61,16 +63,17 @@ for (i <- List(2, 3, 11, -9)) {
 case class Or(number: Int, name: String) // our own Either
 val two = Or(2, "two")
 val orTest = two match {
-  case Or(number, name) => s"$number is written as $name"
+  case Or(number, name) => println(s"$number is written as $name")
 }
 val orTest2 = two match {
-  case number Or name => s"$number is written as $name"
+  case number Or name => println(s"$number is written as $name")
 }
 val infixPatternTest = List(1, 2, 3) match {
   // here :: is a final case class!!!
-  case ::(1, tail) => s"A list that starts with 1 and ends with $tail"
+  case ::(1, tail) => println(s"A list that starts with 1 and ends with $tail")
   // using infix
-  case head :: tail => s"A list that starts with $head and ends with $tail"
+  case head :: tail => println(s"A list that starts with $head and ends with $tail")
+  case x => println(s"Did not match any pattern: $x")
 }
 
 // Either: Convention dictates that Left is used for failure and Right is used for success.
@@ -81,14 +84,17 @@ val either3 = Left("blah") // Left(String, Nothing
 // decomposing sequences
 val numbers = List(1)
 val vararg = numbers match {
-  case List(1, _*) => "starting with 1"
+  case List(1, _*) => println("starting with 1")
 }
 
 abstract class MyList[+A] {
   def head: A = ???
+
   def tail: MyList[A] = ???
 }
+
 case object Empty extends MyList[Nothing]
+
 case class Cons[+A](override val head: A, override val tail: MyList[A]) extends MyList[A]
 
 object MyList {
@@ -108,17 +114,60 @@ val decomposed = myList match {
 
 abstract class Wrapper[T] {
   def isEmpty: Boolean
+
   def get: T
 }
 
 object PersonWrapper {
   def unapply(person: Person): Wrapper[String] = new Wrapper[String] {
     def isEmpty = false
-    def get= person.name
+
+    def get = person.name
   }
 }
 
 val customReturnTypePatternTest = bob match {
   case PersonWrapper(n) => s"This person's name is $n"
   case _ => "An alien"
+}
+
+// More syntax - matching for lower case variables must use ``
+val number0 = 0
+val sum = 123
+sum % 3 match {
+  case x@`number0` => println(s"matched value for `number0`, value=$x")
+  case x => println(s"matched value for the rest: $x")
+}
+
+// Options
+def optionsPatternMatching(option: Option[Seq[Int]]): Unit = {
+  option match {
+    case Some(value) => println(s"I'm not an empty option. Value $value")
+    case None => println("I'm an empty option")
+  }
+}
+
+optionsPatternMatching(Some(Seq(1, 2, 3)))
+optionsPatternMatching(None)
+
+import scala.collection.mutable.Map
+
+val str = "This is a string"
+val charToIndices = (0 until str.length).foldLeft[Map[Char, Seq[Int]]](Map()) { (acc, index) =>
+  val key = str(index)
+  val value: Option[Seq[Int]] = acc.get(key)
+
+ val entry = value match {
+    case Some(indices) => key -> (index +: indices)
+    case None => key -> Seq(index)
+  }
+
+  acc ++ Map(entry)
+}
+
+println(s"charToIndices=$charToIndices")
+
+str.find(char => charToIndices(char).length == 0) match {
+  case Some(c) => charToIndices(c)(0)
+  case None => -1
 }

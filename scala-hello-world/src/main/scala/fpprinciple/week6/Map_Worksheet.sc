@@ -83,6 +83,7 @@ val mapTestWithFilter2 = mapWithSeqValues
 val collectTest = mapWithSeqValues.collect[Seq[String]] {
   case (key: String, values: Seq[String]) if key == "teas" => key +: values
 }
+
 // collectTest2 is equivalent to collectTest
 // returns: List(List(teas, green, oolong))
 val pf = new PartialFunction[(String, Seq[String]), Seq[String]] {
@@ -157,8 +158,13 @@ mapWithSeqValues.get("teas") // Some(List(green, oolong))
 mapWithSeqValues.apply("teas") // List(green, oolong)
 // also see sample implementations for map and flatMap in Monad_Worksheet.sc
 
+// Map(key1 -> 1, key2 -> 2)
 val immutableMap = Map("key1" -> 1, "key2" -> 2)
 // Map(key3 -> 3, key2 -> 2, key1 -> 1)
 val immutableMap2 = Map("key3" -> 3, "key2" -> 4) ++ immutableMap
 // Map(key1 -> 1, key2 -> 4)
 val immutableMap3 = immutableMap + ("key2" -> 4)
+
+val numbers = Seq(3, 1, 9, 6, 5, 1)
+// HashMap(5 -> 4, 1 -> 5, 6 -> 3, 9 -> 2, 3 -> 0)
+val numberToIndices = (numbers zip (0 until numbers.length)).toMap
