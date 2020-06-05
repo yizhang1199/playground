@@ -11,8 +11,12 @@ import spark.test.SparkHelper.{corruptRecordOptions, flattenedUserSchema, userSc
 import scala.concurrent.duration._
 
 /**
+ * Delta Table Documentation:
+ * https://docs.delta.io/latest/delta-update.html#upsert-into-a-table-using-merge
+ * (Scala API) https://docs.delta.io/latest/api/scala/io/delta/tables/DeltaTable.html
+ *
  * Delta Behaviors
- * 1. Nested fields not supported by DeltaTable.merge.  Also Spark has limited support for predicate pushdown on nested fields.
+ * 1. Spark has limited support for predicate pushdown on nested fields.
  * 2. Every malformed row in the microbatch results in a "null" row being created in a new parquet file.
  *    Also, malformed rows are not captured in _currupt_record.
  * 3. If an existing row is updated, it is added to a new parquet file -- existing parquet files are never updated. (Expected)
@@ -43,7 +47,7 @@ import scala.concurrent.duration._
  * on the same target row, the update operation is ambiguous as it is unclear which source
  * should be used to update the matching target row.
  * You can preprocess the source table to eliminate the possibility of multiple matches.
- * Please refer to https://docs.delta.io/latest/delta/delta-update.html#upsert-into-a-table-using-merge
+ * Please refer to https://docs.delta.io/latest/delta-update.html#-delta-merge
  * at org.apache.spark.sql.delta.DeltaErrors$.multipleSourceRowMatchingTargetRowInMergeException(DeltaErrors.scala:451)
  *
  * Output from reading the delta tables:
