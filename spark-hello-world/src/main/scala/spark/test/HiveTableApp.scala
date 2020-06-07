@@ -4,12 +4,12 @@ import org.apache.spark.sql.SaveMode
 
 object HiveTableApp extends App {
   val name = HiveTableApp.getClass.getSimpleName
-  val spark = SparkHelper.initSpark(name)
+  implicit val spark = SparkHelper.initSpark(name)
 
-  val things = Things.setup(spark)
+  val things = new Things()
 
   // bucketing is only supported with managed hive tables
-  things.write
+  things.uniform.write
     .mode(SaveMode.Overwrite)
     .partitionBy("color")
     .bucketBy(2,"age") // Spark will create numBuckets * numCores files, e.g. 8 (2 * 4) in this case

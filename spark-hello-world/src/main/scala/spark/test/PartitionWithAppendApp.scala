@@ -1,18 +1,18 @@
 package spark.test
 
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.{SaveMode, SparkSession}
 
 object PartitionWithAppendApp extends App {
 
   val name = PartitionWithAppendApp.getClass.getSimpleName
-  val spark = SparkHelper.initSpark(name)
+  implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
   private val DataPath = "target/partition-append-test"
   //Directory(File(DataPath)).deleteRecursively()
 
   import spark.implicits._
 
-  val things = Things.setup(spark)
+  val things = new Things().uniform
 
   /**
    * 2 parquet files, sorted & evenly clustered by age.

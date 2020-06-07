@@ -11,9 +11,10 @@ object AdHocApp extends App {
   implicit val spark: SparkSession = SparkHelper.initSpark(name)
 
   val df = spark.read
-      .format("delta")
-      .load("/Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/streaming-sinks/KafkaSourceNestedFieldsToDeltaSinkApp$/output.delta")
+      .format("parquet")
+      .load("/Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/partition-test/repartitionByRange_skewedAgeSalt")
 
   df.printSchema()
-  df.sort("userId").show(20, truncate = false)
+  println(s"Total count=${df.count()}")
+  df.groupBy("age").count().sort("age").show(truncate = false, numRows = 200)
 }

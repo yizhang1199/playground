@@ -15,7 +15,7 @@ ThisBuild / version := "0.1"
 ThisBuild / sbtVersion := "1.3.7"
 ThisBuild / scalaVersion := "2.12.8" // "2.12.8" "2.11.12"
 
-lazy val sparkVersion = "2.4.4"
+lazy val sparkVersion = "2.4.5"
 lazy val deltaLakeVersion = "0.5.0"
 
 // The following are added due to jar conflicts with spark
@@ -56,13 +56,14 @@ lazy val commonSettings = Seq(
     //"org.apache.kafka" %% "kafka-streams-scala" % kafkaStreamsVersion,
 
     // logging
-    "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-    "ch.qos.logback" % "logback-classic" % logbackVersion,
+    // "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+    "org.slf4s" %% "slf4s-api" % "1.7.25",
 
     // testing
     "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
     "org.mockito" %% "mockito-scala" % mockitoScalaVersion % Test
   ),
+
   scalacOptions ++= Seq( // https://docs.scala-lang.org/overviews/compiler-options/index.html
     "-feature",
     "-deprecation",
@@ -71,6 +72,7 @@ lazy val commonSettings = Seq(
     "-Xfatal-warnings" // New lines for each options
     //"-opt:unreachable-code,simplify-jumps" // not supported on scala 2.11
   ),
+
   dependencyOverrides ++= {
     Seq(
       // Pin these to versions required by Spark to avoid java.lang.NoSuchMethodError or Incompatible version errors
@@ -82,7 +84,8 @@ lazy val commonSettings = Seq(
       "org.json4s" %% "json4s-core" % json4sVersion,
       "org.json4s" %% "json4s-jackson" % json4sVersion,
       "org.json4s" %% "json4s-scalap" % json4sVersion,
-      "com.google.guava" % "guava" % guavaVersion
+      "com.google.guava" % "guava" % guavaVersion,
+      "org.slf4s" %% "slf4s-api" % "1.7.25"
     )
   }
 )

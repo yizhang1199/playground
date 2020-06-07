@@ -2,6 +2,7 @@ package spark.test
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{ArrayType, DateType, IntegerType, StringType, StructField, StructType}
+import spark.test.PartitionApp.spark
 
 import scala.reflect.io.{Directory, File}
 
@@ -28,6 +29,8 @@ object SparkHelper {
     // https://github.com/googleapis/google-cloud-java/issues/4414  TODO is this the right way?
     //spark.conf.set("spark.executor.userClassPathFirst", "true")
     //spark.conf.set("spark.driver.userClassPathFirst", "true")
+
+    spark.sparkContext.setLogLevel("WARN") // spark is to verbose
 
     spark
   }
