@@ -19,9 +19,10 @@ object PartitionApp extends App {
 
   import spark.implicits._
 
-  private val things = new Things(skewedCount = 100000)
+  private val things = new Things()
 
-  clusterSkewedThings()
+  //clusterSkewedThings()
+  testRepartition()
 
   private def saltAge: UserDefinedFunction = udf { (age: Int, createDate: Date) =>
     val count = 10
@@ -79,11 +80,65 @@ object PartitionApp extends App {
       .mode(SaveMode.Overwrite)
       .parquet(s"$DataPath/repartitionByRange3_color")
 
-    // data skewed by age since each file contains a single age
+    /**
+     * data skewed since each file contains a single age
+     *
+     * file1 (for age=1): row group 1: RC:78 TS:2261 OFFSET:4
+     * file2 (for age=2): row group 1: RC:12 TS:607 OFFSET:4
+     * file3 (for age=3): row group 1: RC:28 TS:1027 OFFSET:4
+     * file4 (for age=4): row group 1: RC:1 TS:336 OFFSET:4
+     * file5 (for age=5): row group 1: RC:1 TS:311 OFFSET:4
+     */
     things.skewed.repartitionByRange(5, $"age")
       .write
       .mode(SaveMode.Overwrite)
       .parquet(s"$DataPath/repartitionByRange_skewed_age")
+
+    /**
+     * row group 1: RC:24 TS:929 OFFSET:4
+     * --------------------------------------------------------------------------------
+     * id:           INT64 SNAPPY DO:0 FPO:4 SZ:172/255/1.48 VC:24 ENC:BIT_PACKED,PLAIN ST:[min: 4, max: 112, num_nulls: 0]
+     * name:         BINARY SNAPPY DO:0 FPO:176 SZ:176/339/1.93 VC:24 ENC:RLE,BIT_PACKED,PLAIN ST:[min: Thing 10, max: Thing 97, num_nulls: 0]
+     * age:          INT32 SNAPPY DO:0 FPO:352 SZ:68/64/0.94 VC:24 ENC:BIT_PACKED,PLAIN_DICTIONARY ST:[min: 1, max: 1, num_nulls: 0]
+     * color:        BINARY SNAPPY DO:0 FPO:420 SZ:126/122/0.97 VC:24 ENC:RLE,BIT_PACKED,PLAIN_DICTIONARY ST:[min: blue, max: yellow, num_nulls: 0]
+     * createDate:   INT32 SNAPPY DO:0 FPO:546 SZ:147/149/1.01 VC:24 ENC:RLE,BIT_PACKED,PLAIN ST:[min: 2019-01-02, max: 2019-04-29, num_nulls: 0]
+     *
+     * row group 1: RC:18 TS:777 OFFSET:4
+     * --------------------------------------------------------------------------------
+     * id:           INT64 SNAPPY DO:0 FPO:4 SZ:148/207/1.40 VC:18 ENC:BIT_PACKED,PLAIN ST:[min: 1, max: 117, num_nulls: 0]
+     * name:         BINARY SNAPPY DO:0 FPO:152 SZ:143/263/1.84 VC:18 ENC:RLE,BIT_PACKED,PLAIN ST:[min: Thing 1, max: Thing 87, num_nulls: 0]
+     * age:          INT32 SNAPPY DO:0 FPO:295 SZ:68/64/0.94 VC:18 ENC:BIT_PACKED,PLAIN_DICTIONARY ST:[min: 1, max: 1, num_nulls: 0]
+     * color:        BINARY SNAPPY DO:0 FPO:363 SZ:112/109/0.97 VC:18 ENC:RLE,BIT_PACKED,PLAIN_DICTIONARY ST:[min: blue, max: yellow, num_nulls: 0]
+     * createDate:   INT32 SNAPPY DO:0 FPO:475 SZ:138/134/0.97 VC:18 ENC:RLE,BIT_PACKED,PLAIN_DICTIONARY ST:[min: 2019-05-24, max: 2019-08-03, num_nulls: 0]
+     *
+     * row group 1: RC:32 TS:1129 OFFSET:4
+     * --------------------------------------------------------------------------------
+     * id:           INT64 SNAPPY DO:0 FPO:4 SZ:204/319/1.56 VC:32 ENC:BIT_PACKED,PLAIN ST:[min: 19, max: 120, num_nulls: 0]
+     * name:         BINARY SNAPPY DO:0 FPO:208 SZ:208/440/2.12 VC:32 ENC:RLE,BIT_PACKED,PLAIN ST:[min: Thing 101, max: Thing 99, num_nulls: 0]
+     * age:          INT32 SNAPPY DO:0 FPO:416 SZ:68/64/0.94 VC:32 ENC:BIT_PACKED,PLAIN_DICTIONARY ST:[min: 1, max: 1, num_nulls: 0]
+     * color:        BINARY SNAPPY DO:0 FPO:484 SZ:128/125/0.98 VC:32 ENC:RLE,BIT_PACKED,PLAIN_DICTIONARY ST:[min: blue, max: yellow, num_nulls: 0]
+     * createDate:   INT32 SNAPPY DO:0 FPO:612 SZ:174/181/1.04 VC:32 ENC:RLE,BIT_PACKED,PLAIN ST:[min: 2019-08-10, max: 2019-11-20, num_nulls: 0]
+     *
+     * row group 1: RC:22 TS:897 OFFSET:4
+     * --------------------------------------------------------------------------------
+     * id:           INT64 SNAPPY DO:0 FPO:4 SZ:164/239/1.46 VC:22 ENC:PLAIN,BIT_PACKED ST:[min: 7, max: 119, num_nulls: 0]
+     * name:         BINARY SNAPPY DO:0 FPO:168 SZ:167/317/1.90 VC:22 ENC:PLAIN,BIT_PACKED,RLE ST:[min: Thing 107, max: Thing 94, num_nulls: 0]
+     * age:          INT32 SNAPPY DO:0 FPO:335 SZ:82/78/0.95 VC:22 ENC:PLAIN_DICTIONARY,BIT_PACKED ST:[min: 1, max: 3, num_nulls: 0]
+     * color:        BINARY SNAPPY DO:0 FPO:417 SZ:125/122/0.98 VC:22 ENC:PLAIN_DICTIONARY,BIT_PACKED,RLE ST:[min: blue, max: yellow, num_nulls: 0]
+     * createDate:   INT32 SNAPPY DO:0 FPO:542 SZ:144/141/0.98 VC:22 ENC:PLAIN,BIT_PACKED,RLE ST:[min: 2019-01-03, max: 2019-12-23, num_nulls: 0]
+     *
+     * row group 1: RC:24 TS:944 OFFSET:4
+     * --------------------------------------------------------------------------------
+     * id:           INT64 SNAPPY DO:0 FPO:4 SZ:172/255/1.48 VC:24 ENC:PLAIN,BIT_PACKED ST:[min: 2, max: 116, num_nulls: 0]
+     * name:         BINARY SNAPPY DO:0 FPO:176 SZ:175/340/1.94 VC:24 ENC:PLAIN,BIT_PACKED,RLE ST:[min: Thing 100, max: Thing 96, num_nulls: 0]
+     * age:          INT32 SNAPPY DO:0 FPO:351 SZ:82/78/0.95 VC:24 ENC:PLAIN_DICTIONARY,BIT_PACKED ST:[min: 3, max: 5, num_nulls: 0]
+     * color:        BINARY SNAPPY DO:0 FPO:433 SZ:126/122/0.97 VC:24 ENC:PLAIN_DICTIONARY,BIT_PACKED,RLE ST:[min: blue, max: yellow, num_nulls: 0]
+     * createDate:   INT32 SNAPPY DO:0 FPO:559 SZ:142/149/1.05 VC:24 ENC:PLAIN,BIT_PACKED,RLE ST:[min: 2019-01-22, max: 2019-12-14, num_nulls: 0]
+     */
+    things.skewed.repartitionByRange(5, $"age", $"createDate")
+      .write
+      .mode(SaveMode.Overwrite)
+      .parquet(s"$DataPath/repartitionByRange_skewed_age_createDate")
 
     /**
      * 4 parquet files created directly under ".../repartitionByRange4_date_color/", sorted & clustered by createDate then color.

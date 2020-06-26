@@ -44,4 +44,20 @@ object PartitionWithAppendApp extends App {
     .write
     .mode(SaveMode.Append)
     .parquet(DataPath)
+
+  /**
+   * Overwrote existing files with 4 new files, each with 3 distinct ages.
+   *
+   * /Users/yzhang/github/yizhang1199/playground/spark-hello-world/target/partition-append-test % ls -l
+   * total 32
+   * -rw-r--r--  1 yzhang  CORP\Domain Users     0 Jun 25 18:37 _SUCCESS
+   * -rw-r--r--  1 yzhang  CORP\Domain Users  1619 Jun 25 18:37 part-00000-33f1ba90-8a32-4d9c-a25c-518b0fe330c6-c000.snappy.parquet (age: 1-3)
+   * -rw-r--r--  1 yzhang  CORP\Domain Users  1841 Jun 25 18:37 part-00001-33f1ba90-8a32-4d9c-a25c-518b0fe330c6-c000.snappy.parquet (age: 4-6)
+   * -rw-r--r--  1 yzhang  CORP\Domain Users  1887 Jun 25 18:37 part-00002-33f1ba90-8a32-4d9c-a25c-518b0fe330c6-c000.snappy.parquet (age: 7-9)
+   * -rw-r--r--  1 yzhang  CORP\Domain Users  1610 Jun 25 18:37 part-00003-33f1ba90-8a32-4d9c-a25c-518b0fe330c6-c000.snappy.parquet (age: 10-12)
+   */
+  things.repartitionByRange(4, $"age")
+    .write
+    .mode(SaveMode.Overwrite)
+    .parquet(DataPath)
 }
