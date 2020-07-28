@@ -25,7 +25,7 @@ object BinaryTree extends App {
 
   private def zigZagLevelOrderTraversal(root: Node): Seq[Seq[Int]] = {
     val result: mutable.ListBuffer[Seq[Int]] = mutable.ListBuffer()
-    var queue: mutable.Queue[Node] = mutable.Queue[Node](root)
+    var queue: mutable.ArrayDeque[Node] = mutable.ArrayDeque[Node](root)
     var leftToRight = true
 
     while (queue.nonEmpty) {
@@ -41,7 +41,7 @@ object BinaryTree extends App {
 
       val newNodesToProcess = mutable.Queue[Node]()
       while(queue.nonEmpty) {
-        val node = queue.dequeue()
+        val node = queue.removeHead()
         node.left.foreach(newNodesToProcess.enqueue)
         node.right.foreach(newNodesToProcess.enqueue)
       }
@@ -69,7 +69,7 @@ object BinaryTree extends App {
   }
 
   // Pre-order: parent, left, right
-  private def preOrderTraversal(node: Node, result: Queue[Int] = Queue()): Seq[Int] = {
+  private def preOrderTraversal(node: Node, result: mutable.Queue[Int] = mutable.Queue()): Seq[Int] = {
     result.enqueue(node.value)
     node.left.foreach(n => preOrderTraversal(n, result))
     node.right.foreach(n => preOrderTraversal(n, result))
