@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.12.10"
+ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / organization := "com.example"
 
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5"

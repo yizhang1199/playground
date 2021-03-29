@@ -10,13 +10,13 @@
  * as a fallback.  Using the mechanism, we can define a build-level default setting for frequently
  * used keys such as version, scalaVersion, and organization.
  */
-ThisBuild / version := "0.1"
-ThisBuild / sbtVersion := "1.3.3"
-ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / version := "0.2"
+ThisBuild / sbtVersion := "1.4.7"  // https://www.scala-sbt.org/1.x/docs/index.html
+ThisBuild / scalaVersion := "2.13.5"
 
-lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8"
+lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.2.5" // https://www.scalatest.org/install
 lazy val slf4sApi = "ch.timo-schmid" %% "slf4s-api" % "1.7.26"
-lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2" // https://github.com/lightbend/scala-logging
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(

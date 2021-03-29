@@ -107,13 +107,17 @@ class MyImpl extends MyTrait {
 // Lambda expression (also called anonymous function) is a function definition that is
 // not bound to an identifier. The latter is a named function
 // doNothing is a function value created at runtime, whose apply method will evaluate the function literal "(_: Int) => {}"
-val doNothing: Int => Unit = (x: Int) => {
-  println(s"do nothing with $x")
-} // doNothing's type is explicitly defined
+val doNothing: Int => Unit = (x: Int) => println(s"doNothing with $x") // doNothing's type is explicitly defined
+val doNothingEquivalent = new Function1[Int, Unit] { // doNothing is the syntactic sugar for doNothingEquivalent
+  override def apply(x: Int) = println(s"doNothingEquivalent with $x")
+}
+
 // doNothing2's type is inferred
 val doNothing2 = (x: Int) => println(s"do nothing2 with $x")
 doNothing(1)
 doNothing(2)
+doNothingEquivalent(1)
+doNothingEquivalent(2)
 doNothing2(3)
 doNothing2(4)
 // empty-parameter
@@ -174,35 +178,39 @@ add3.isInstanceOf[Function2[Int, Int, Int]]
 
 // Technically, "sum" is not a function.  It is a method that needs to be defined within a class or object.
 // By all accounts, creating a Scala def method creates a standard method in a Java class.
-def sum(x: Int, y: Int, z: Int): Int = x + y + z
-sum(3, 4, 5)
-val sumFunction = sum _ // The _ turns a method into a function object.  "sum _" is a partially applied function
+def sumMethod(x: Int, y: Int, z: Int): Int = x + y + z
+sumMethod(3, 4, 5)
+val sumFunction = sumMethod _ // The _ turns a method into a function object.  "sum _" is a partially applied function
 sumFunction(0, 2, 8)
 /**
  * Since only one argument is missing, the Scala compiler generates a new function class whose apply
  * method takes one argument. When invoked with that one argument, this generated function's apply
  * method invokes sum, passing in 1, the argument passed to the function, and 3
  */
-val sumFunction1 = sum(1, _, 3) // Int => Int
+val sumFunction1 = sumMethod(1, _, 3) // Int => Int
 sumFunction1(2) // 1 + 2 + 3
-val sumFunction2 = sum(1, _, _) // // (Int, Int) => Int
+val sumFunction2 = sumMethod(1, _, _) // (Int, Int) => Int
 sumFunction2(10, 11) // 1 + 10 + 11
-(sum _).toString // we can now call all methods available on the function object
-(sum _).apply(4, 5, 6) // Can also use syntactic sugar sum(4, 5)
+(sumMethod _).toString // we can now call all methods available on the function object
+(sumMethod _).apply(4, 5, 6) // Can also use syntactic sugar sum(4, 5)
 
-val add4 = sum _ // add4 is a function object, a different instance from "sum _"
-// Scala allows you to leave off the _ only when a function type is expected.
-val add5: (Int, Int, Int) => Int = sum // coerce method into a function object since add5's type is explicitly defined
-// Won't compile because sum is a method in a Java class (TODO which class in this case?)
-//sum.apply(3, 4)
-//sum.toString
-//sum.isInstanceOfFunction2[Int, Int, Int]]
+// add4 is a function object, a different instance from "sumMethod _"
+val add4 = sumMethod _ // add4: (Int, Int, Int) => Int = <function>
+// Scala allows you to leave off the _ when a function type is expected.
+// eta-expansion: when a method, e.g. sum, is used in a place where a Function type is expected,
+// the method is automatically converted to the function value.
+val add5: (Int, Int, Int) => Int = sumMethod // add5: (Int, Int, Int) => Int = <function>
+println("sumMethod _")
+(sumMethod _).apply(3, 4, 8) // (sumMethod _) is a function
+(sumMethod _).toString // res30: String = <function>
+(sumMethod _).isInstanceOf[(Int, Int, Int) => Int] // true
+(sumMethod _).isInstanceOf[Function3[Int, Int, Int, Int]] // true
 
 // Closure
 // It makes no difference that the y in this case is a parameter to a method call that has already returned.
 // The Scala compiler rearranges things in cases like these so that the captured parameter lives out on the heap,
 // instead of the stack, and thus can outlive the method call that created it.
-def methodThatReturnsFunction(y: Int) = (x: Int) => x + y // a method can also return a function
+def methodThatReturnsFunction(y: Int): Int => Int = (x: Int) => x + y // a method can also return a function
 val plus5 = methodThatReturnsFunction(5) // Int => Int
 plus5(3) // 5 + 3
 methodThatReturnsFunction(5)(3) // same as plus5(3)
