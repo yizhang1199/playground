@@ -182,11 +182,10 @@ def sumMethod(x: Int, y: Int, z: Int): Int = x + y + z
 sumMethod(3, 4, 5)
 val sumFunction = sumMethod _ // The _ turns a method into a function object.  "sum _" is a partially applied function
 sumFunction(0, 2, 8)
-/**
- * Since only one argument is missing, the Scala compiler generates a new function class whose apply
- * method takes one argument. When invoked with that one argument, this generated function's apply
- * method invokes sum, passing in 1, the argument passed to the function, and 3
- */
+
+// Since only one argument is missing, the Scala compiler generates a new function class whose apply
+// method takes one argument. When invoked with that one argument, this generated function's apply
+// method invokes sum, passing in 1, the argument passed to the function, and 3
 val sumFunction1 = sumMethod(1, _, 3) // Int => Int
 sumFunction1(2) // 1 + 2 + 3
 val sumFunction2 = sumMethod(1, _, _) // (Int, Int) => Int
@@ -196,9 +195,13 @@ sumFunction2(10, 11) // 1 + 10 + 11
 
 // add4 is a function object, a different instance from "sumMethod _"
 val add4 = sumMethod _ // add4: (Int, Int, Int) => Int = <function>
-// Scala allows you to leave off the _ when a function type is expected.
-// eta-expansion: when a method, e.g. sum, is used in a place where a Function type is expected,
-// the method is automatically converted to the function value.
+//-----------------------------------------------------------------
+// eta-expansion:
+// In general, if Scala expects a function type, you can pass it a method name and have it automatically converted
+// to a function. For example, if you are calling a method that accepts a function as one of its parameters,
+// you can supply as that argument a method of the appropriate signature without having to include the trailing
+// underscore. This is called eta-expansion.
+//-----------------------------------------------------------------
 val add5: (Int, Int, Int) => Int = sumMethod // add5: (Int, Int, Int) => Int = <function>
 println("sumMethod _")
 (sumMethod _).apply(3, 4, 8) // (sumMethod _) is a function
@@ -206,10 +209,12 @@ println("sumMethod _")
 (sumMethod _).isInstanceOf[(Int, Int, Int) => Int] // true
 (sumMethod _).isInstanceOf[Function3[Int, Int, Int, Int]] // true
 
-// Closure
+//-----------------------------------------------------------------
+// Closure:
 // It makes no difference that the y in this case is a parameter to a method call that has already returned.
 // The Scala compiler rearranges things in cases like these so that the captured parameter lives out on the heap,
 // instead of the stack, and thus can outlive the method call that created it.
+//-----------------------------------------------------------------
 def methodThatReturnsFunction(y: Int): Int => Int = (x: Int) => x + y // a method can also return a function
 val plus5 = methodThatReturnsFunction(5) // Int => Int
 plus5(3) // 5 + 3
