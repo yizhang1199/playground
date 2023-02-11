@@ -58,6 +58,7 @@ def forFun2[T](first: List[T], second: List[T]): List[(T, T)] = {
     t2 <- second
   } yield (t1, t2)
 }
+// callForFun2: List[(String, String)] = List((a,c), (a,d), (a,e), (b,c), (b,d), (b,e))
 val callForFun2 = forFun2(List("a", "b"), List("c", "d", "e"))
 
 def forFun2Equivalent[T](first: List[T], second: List[T]): List[(T, T)] = {
@@ -66,6 +67,7 @@ def forFun2Equivalent[T](first: List[T], second: List[T]): List[(T, T)] = {
       t2 => (t1, t2))
   )
 }
+// callForFun2Equivalent: List[(String, String)] = List((a,c), (a,d), (a,e), (b,c), (b,d), (b,e))
 val callForFun2Equivalent = forFun2(List("a", "b"), List("c", "d", "e"))
 
 val teas = List("green", "oolong", "black", "puer", "herb")
